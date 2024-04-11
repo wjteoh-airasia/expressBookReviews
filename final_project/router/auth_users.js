@@ -5,12 +5,12 @@ const regd_users = express.Router();
 
 let users = [{ username: "gowth", password: "test1234"}];
 
-const isValid = (username)=>{ //returns boolean
+const isValid = (username)=> {
   let usersWithSameName = users.filter((user)=>{
     return user.username === username;
   });
 
-  return usersWithSameName.length > 0;
+  return !(usersWithSameName.length > 0);
 }
 
 const authenticatedUser = (username, password) => {
@@ -26,7 +26,6 @@ regd_users.post("/login", (req,res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  console.log(req.body);
   if (!username || !password) {
     return res.status(404).json({message: "Error logging in"});
   }
