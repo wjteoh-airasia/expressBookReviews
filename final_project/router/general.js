@@ -24,7 +24,6 @@ public_users.get('/',function (req, res) {
   booksDB
     .getData()
     .then((bookData) => {
-      console.log('bookData', bookData);
       return res.status(200).json(JSON.stringify(bookData));
     }).catch(() => {
       return res.status(400).json({message: "Server error, please try again."});
