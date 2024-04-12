@@ -12,8 +12,10 @@ const booksDB = {
             10: {"author": "Samuel Beckett","title": "Molloy, Malone Dies, The Unnamable, the trilogy", "reviews": {} }
       },
       getData: function() {
+            // Task 10, 11, 12, 13
+            const localBooks = this.books;
             return new Promise(function(resolve, reject) {
-                  resolve(this.books);
+                  resolve(localBooks);
             });
       }
 }

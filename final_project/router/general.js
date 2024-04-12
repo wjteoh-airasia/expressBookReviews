@@ -21,9 +21,14 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-
-
-  return res.status(200).json(JSON.stringify(booksDB.books));
+  booksDB
+    .getData()
+    .then((bookData) => {
+      console.log('bookData', bookData);
+      return res.status(200).json(JSON.stringify(bookData));
+    }).catch(() => {
+      return res.status(400).json({message: "Server error, please try again."});
+    });
 });
 
 // Get book details based on ISBN
@@ -33,11 +38,17 @@ public_users.get('/isbn/:isbn',function (req, res) {
     return res.status(404).json({message: "Error, please input an isbn"});
   }
 
-  if (!booksDB.books.hasOwnProperty(isbn)) {
-    return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
-  }
+  booksDB
+    .getData()
+    .then((bookData) => {
+      if (!bookData.hasOwnProperty(isbn)) {
+        return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
+      }
 
-  return res.status(200).json(JSON.stringify(booksDB.books[isbn]));
+      return res.status(200).json(JSON.stringify(bookData[isbn]));
+    }).catch(() => {
+      return res.status(400).json({message: "Server error, please try again."});
+    });
  });
   
 // Get book details based on author
@@ -47,12 +58,17 @@ public_users.get('/author/:author',function (req, res) {
     return res.status(404).json({message: "Error, please input an author"});
   }
 
-  const foundBooks = Object.values(booksDB.books).filter((value) => value.author.toLowerCase() === author.toLowerCase());
-  if (foundBooks.length === 0) {
-    return res.status(200).json({ message: `Author '${author}' not found in bookstore.` });
-  }
-
-  return res.status(200).json(JSON.stringify(foundBooks));
+  booksDB
+    .getData()
+    .then((bookData) => {
+      const foundBooks = Object.values(bookData).filter((value) => value.author.toLowerCase() === author.toLowerCase());
+      if (foundBooks.length === 0) {
+        return res.status(200).json({ message: `Author '${author}' not found in bookstore.` });
+      }
+      return res.status(200).json(JSON.stringify(foundBooks));
+    }).catch(() => {
+      return res.status(400).json({message: "Server error, please try again."});
+    });
 });
 
 // Get all books based on title
@@ -62,12 +78,18 @@ public_users.get('/title/:title',function (req, res) {
     return res.status(404).json({message: "Error, please input an title"});
   }
 
-  const foundBooks = Object.values(booksDB.books).filter((value) => value.title.toLowerCase() === title.toLowerCase());
-  if (foundBooks.length === 0) {
-    return res.status(200).json({ message: `Title '${title}' not found in bookstore.` });
-  }
+  booksDB
+    .getData()
+    .then((bookData) => {
+      const foundBooks = Object.values(bookData).filter((value) => value.title.toLowerCase() === title.toLowerCase());
+      if (foundBooks.length === 0) {
+        return res.status(200).json({ message: `Title '${title}' not found in bookstore.` });
+      }
 
-  return res.status(200).json(JSON.stringify(foundBooks));
+      return res.status(200).json(JSON.stringify(foundBooks));
+    }).catch(() => {
+      return res.status(400).json({message: "Server error, please try again."});
+    });
 });
 
 //  Get book review
