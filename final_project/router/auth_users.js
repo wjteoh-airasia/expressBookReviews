@@ -66,6 +66,26 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   return res.status(200).json(JSON.stringify(books[isbn]));
 });
 
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  if (!isbn) {
+    return res.status(404).json({message: "Error, please input an isbn"});
+  }
+
+  if (!books.hasOwnProperty(isbn)) {
+    return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
+  }
+
+  const username = req.session.authorization.username;
+  if (!books[isbn].reviews.hasOwnProperty(username)) {
+    return res.status(200).json({ message: `Username '${username}' review for ISBN '${isbn}' not found in bookstore.` });
+  }
+
+  const review = books[isbn].reviews[username];
+  delete books[isbn].reviews[username];
+  return res.status(200).json({ message: `Username '${username}' review '${review}' for ISBN '${isbn}' is deleted.` });
+});
+
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
