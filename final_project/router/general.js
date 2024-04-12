@@ -1,5 +1,5 @@
 const express = require('express');
-let books = require("./booksdb.js");
+let booksDB = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
@@ -21,7 +21,9 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  return res.status(200).json(JSON.stringify(books));
+
+
+  return res.status(200).json(JSON.stringify(booksDB.books));
 });
 
 // Get book details based on ISBN
@@ -31,11 +33,11 @@ public_users.get('/isbn/:isbn',function (req, res) {
     return res.status(404).json({message: "Error, please input an isbn"});
   }
 
-  if (!books.hasOwnProperty(isbn)) {
+  if (!booksDB.books.hasOwnProperty(isbn)) {
     return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
   }
 
-  return res.status(200).json(JSON.stringify(books[isbn]));
+  return res.status(200).json(JSON.stringify(booksDB.books[isbn]));
  });
   
 // Get book details based on author
@@ -45,7 +47,7 @@ public_users.get('/author/:author',function (req, res) {
     return res.status(404).json({message: "Error, please input an author"});
   }
 
-  const foundBooks = Object.values(books).filter((value) => value.author.toLowerCase() === author.toLowerCase());
+  const foundBooks = Object.values(booksDB.books).filter((value) => value.author.toLowerCase() === author.toLowerCase());
   if (foundBooks.length === 0) {
     return res.status(200).json({ message: `Author '${author}' not found in bookstore.` });
   }
@@ -60,7 +62,7 @@ public_users.get('/title/:title',function (req, res) {
     return res.status(404).json({message: "Error, please input an title"});
   }
 
-  const foundBooks = Object.values(books).filter((value) => value.title.toLowerCase() === title.toLowerCase());
+  const foundBooks = Object.values(booksDB.books).filter((value) => value.title.toLowerCase() === title.toLowerCase());
   if (foundBooks.length === 0) {
     return res.status(200).json({ message: `Title '${title}' not found in bookstore.` });
   }
@@ -75,11 +77,11 @@ public_users.get('/review/:isbn',function (req, res) {
     return res.status(404).json({message: "Error, please input an isbn"});
   }
 
-  if (!books.hasOwnProperty(isbn)) {
+  if (!booksDB.books.hasOwnProperty(isbn)) {
     return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
   }
 
-  return res.status(200).json(JSON.stringify(books[isbn].reviews));
+  return res.status(200).json(JSON.stringify(booksDB.books[isbn].reviews));
 });
 
 module.exports.general = public_users;

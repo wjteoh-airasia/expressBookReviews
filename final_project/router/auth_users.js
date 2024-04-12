@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-let books = require("./booksdb.js");
+let booksDB = require("./booksdb.js");
 const regd_users = express.Router();
 
 let users = [{ username: "gowth", password: "test1234"}];
@@ -52,7 +52,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     return res.status(404).json({message: "Error, please input an isbn"});
   }
 
-  if (!books.hasOwnProperty(isbn)) {
+  if (!booksDB.books.hasOwnProperty(isbn)) {
     return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
   }
 
@@ -62,8 +62,8 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
 
   const username = req.session.authorization.username;
-  books[isbn].reviews[username] = review;
-  return res.status(200).json(JSON.stringify(books[isbn]));
+  booksDB.books[isbn].reviews[username] = review;
+  return res.status(200).json(JSON.stringify(booksDB.books[isbn]));
 });
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
@@ -72,17 +72,17 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     return res.status(404).json({message: "Error, please input an isbn"});
   }
 
-  if (!books.hasOwnProperty(isbn)) {
+  if (!booksDB.books.hasOwnProperty(isbn)) {
     return res.status(200).json({ message: `ISBN '${isbn}' not found in bookstore.` });
   }
 
   const username = req.session.authorization.username;
-  if (!books[isbn].reviews.hasOwnProperty(username)) {
+  if (!booksDB.books[isbn].reviews.hasOwnProperty(username)) {
     return res.status(200).json({ message: `Username '${username}' review for ISBN '${isbn}' not found in bookstore.` });
   }
 
-  const review = books[isbn].reviews[username];
-  delete books[isbn].reviews[username];
+  const review = booksDB.books[isbn].reviews[username];
+  delete booksDB.books[isbn].reviews[username];
   return res.status(200).json({ message: `Username '${username}' review '${review}' for ISBN '${isbn}' is deleted.` });
 });
 
