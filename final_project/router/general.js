@@ -41,7 +41,7 @@ public_users.get('/title/:title',function (req, res) {
   const param = req.params.title;
   let matches = {};
   for (const [key, value] of Object.entries(books)) {
-    if(value.author === param)
+    if(value.title === param)
       matches[key] = value;
   }
   res.send(JSON.stringify(matches,null,4));
@@ -50,7 +50,8 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const param = req.params.isbn;
+  res.send(JSON.stringify(books[param].reviews,null,4));
 });
 
 module.exports.general = public_users;
