@@ -19,23 +19,32 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
-  let param = req.params.isbn;
+  const param = req.params.isbn;
   res.send(JSON.stringify(books[param],null,4));
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  let param = req.params.author;
-  let found = books.filter((book) => book.author === param);
-  res.send(JSON.stringify(found,null,4));
+  const param = req.params.author;
+  let matches = {};
+  for (const [key, value] of Object.entries(books)) {
+    if(value.author === param)
+      matches[key] = value;
+  }
+  res.send(JSON.stringify(matches,null,4));
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  let param = req.params.title;
-  res.send(JSON.stringify(books[param],null,4));
+  const param = req.params.title;
+  let matches = {};
+  for (const [key, value] of Object.entries(books)) {
+    if(value.author === param)
+      matches[key] = value;
+  }
+  res.send(JSON.stringify(matches,null,4));
 });
 
 //  Get book review
