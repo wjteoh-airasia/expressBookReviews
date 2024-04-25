@@ -27,7 +27,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
   let param = req.params.author;
-  let found = books.filter(book => book.author === param);
+  let found = books.filter((book) => book.author === param);
   res.send(JSON.stringify(found,null,4));
 });
 
