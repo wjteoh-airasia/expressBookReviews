@@ -1,5 +1,6 @@
 const express = require('express');
 let books = require("./booksdb.js");
+const e = require('express');
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
@@ -9,8 +10,7 @@ public_users.post("/register", (req,res) => {
   //Write your code here
   // Checks if user already exists.
   // Checks if username and password are not null.
-  const username = req.body.username;
-  const password = req.body.password;
+  const { username, password } = req.body;
 
   if (username && password) {
     if (!isValid(username)) {
@@ -23,48 +23,74 @@ public_users.post("/register", (req,res) => {
   return res.status(403).json({message: "Unable to register user with provided credentials."});
 });
 
+// Synchronous controller function to handle all book get requests
+let getFromBooks = (req) => {
+  let result = {};
+  const { isbn, author, title } = req.params;
+  if( isbn != null ) {
+    // handle /isbn/:isbn
+    result = books[isbn];
+  } else if(author != null) {
+    // handle /author/:author
+    for (const [key, value] of Object.entries(books)) {
+      if(value.author === author)
+        result[key] = value;
+    }
+  } else if(title != null) {
+    // handle /title/:title
+    for (const [key, value] of Object.entries(books)) {
+      if(value.title === title)
+        result[key] = value;
+    }
+  } else {
+    Object.assign(result, books);
+  }
+  // return the result
+  return result;
+};
+
+let getReviews = (req) => {
+  let result = {};
+  const {isbn} = req.params;
+  if( isbn != null ) {
+    books[isbn].reviews;
+  }
+  return result;
+};
+
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/',async (req, res) => {
   //Write your code here
-  res.send(JSON.stringify(books,null,4));
+  // if error checking is required, check for null result from getFromBooks()
+  res.send(JSON.stringify(await getFromBooks(req),null,4));
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn',async (req, res) => {
   //Write your code here
-  const param = req.params.isbn;
-  res.send(JSON.stringify(books[param],null,4));
+  // if error checking is required, check for null result from getFromBooks()
+  res.send(JSON.stringify(await getFromBooks(req),null,4));
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author',async (req, res) => {
   //Write your code here
-  const param = req.params.author;
-  let matches = {};
-  for (const [key, value] of Object.entries(books)) {
-    if(value.author === param)
-      matches[key] = value;
-  }
-  res.send(JSON.stringify(matches,null,4));
+  // if error checking is required, check for null result from getFromBooks()
+  res.send(JSON.stringify(await getFromBooks(req),null,4));
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async (req, res) => {
   //Write your code here
-  const param = req.params.title;
-  let matches = {};
-  for (const [key, value] of Object.entries(books)) {
-    if(value.title === param)
-      matches[key] = value;
-  }
-  res.send(JSON.stringify(matches,null,4));
+  // if error checking is required, check for null result from getFromBooks()
+  res.send(JSON.stringify(await getFromBooks(req),null,4));
 });
 
 //  Get book review
-public_users.get('/review/:isbn',function (req, res) {
+public_users.get('/review/:isbn',async (req, res) => {
   //Write your code here
-  const param = req.params.isbn;
-  res.send(JSON.stringify(books[param].reviews,null,4));
+  // if error checking is required, check for null result from getReviews()
+  res.send(JSON.stringify(await getReviews(req),null,4));
 });
 
 module.exports.general = public_users;
