@@ -11,7 +11,13 @@ app.use(express.json());
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
 app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+	if (req.session && req.session.user) {
+		// Si existe una sesión para el usuario, permitir que la solicitud continúe
+		next();
+	} else {
+		// Si no hay sesión, devolver un error de no autorizado
+		return res.status(401).json({ error: 'Unauthorized. Please login to access this resource.' });
+	}
 });
  
 const PORT =5000;
