@@ -81,6 +81,37 @@ public_users.get('/review/:isbn',function (req, res) {
   else return res.status(404).json({message: "isbn: "+in_isbn+" not found"});
   //return res.status(300).json({message: "Yet to be implemented"});
 });
+/*
+public_users.get('/task10',async function(req,res){
+  axios.get('http://localhost:5000/')
+  .then(function(response){
+    return res.status(200).json(response.data);
+  });
+});
 
+public_users.get('/task11/:isbn',async function(req,res){
+  const in_isbn = req.params.isbn;
+  axios.get('http://localhost:5000/isbn/'+in_isbn)
+  .then(function(response){
+    return res.status(200).json(response.data);
+  });
+});
+
+public_users.get('/task12/:author',async function(req,res){
+  const in_author = req.params.author;
+  axios.get('http://localhost:5000/author/'+in_author)
+  .then(function(response){
+    return res.status(200).json(response.data);
+  });
+});
+
+public_users.get('/task13/:title',async function(req,res){
+  const in_title = req.params.title;
+  axios.get('http://localhost:5000/title/'+in_title)
+  .then(function(response){
+    return res.status(200).json(response.data);
+  });
+});
+*/
 module.exports.general = public_users;
     
