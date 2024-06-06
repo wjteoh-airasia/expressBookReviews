@@ -46,7 +46,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error retrieving book details" }); // Handle unexpected errors
+    res.status(500).json({ message: "Error retrieving book details" }); 
   }
  });
 
@@ -82,7 +82,7 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   try {
-    const requestedTitle = req.params.title; // Retrieve title from request parameters
+    const requestedTitle = req.params.title; 
     const matchingBooks = [];
 
     // Get all book keys
@@ -91,7 +91,7 @@ public_users.get('/title/:title',function (req, res) {
     // Iterate through books and find matches
     for (const key of bookKeys) {
       const book = books[key];
-      if (book.title.toLowerCase() === requestedTitle.toLowerCase()) { // Case-insensitive comparison
+      if (book.title.toLowerCase() === requestedTitle.toLowerCase()) { 
         matchingBooks.push(book);
       }
     }
