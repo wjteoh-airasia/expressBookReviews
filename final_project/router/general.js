@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -67,5 +68,105 @@ public_users.get('/review/:isbn',function (req, res) {
   const reviewsByIsbn = books[isbn].reviews;
   res.send(reviewsByIsbn);
 });
+
+
+
+// Tasks 1-4 using Promises or Async-Await
+
+// Task 10
+
+const getListOfBooks = async (url) => {
+    const outcome = await axios.get(url);
+    let listOfBooks = outcome.data;
+
+    console.log('----------------');
+    console.log('Get List Of Books');
+    console.log('----------------');
+    Object.values(listOfBooks).forEach((book) => {
+        console.log(`Author: ${book.author}`);
+        console.log(`Title: ${book.title}`);
+        console.log(`Reviews: ${JSON.stringify(book.reviews)}`);
+        console.log('----------------');
+    });
+    console.log('\n');
+}
+
+getListOfBooks(
+    'https://joshmatparro-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/'
+).catch(err => console.log(err.toString()));
+
+
+// Task 11
+
+const getBookByISBN = async (url, isbn) => {
+    const outcome = await axios.get(url + isbn);
+    let book = outcome.data;
+    console.log('----------------');
+    console.log('Get Book By ISBN');
+    console.log('----------------');
+
+    console.log(`Author: ${book.author}`);
+    console.log(`Title: ${book.title}`);
+    console.log(`Reviews: ${JSON.stringify(book.reviews)}`);
+    console.log('----------------');
+    console.log('\n');
+}
+
+getBookByISBN(
+    'https://joshmatparro-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/isbn/',
+    2
+).catch(err => console.log(err.toString()));
+
+
+
+// Task 12
+
+const getBookByAuthor = async (url, author) => {
+    const outcome = await axios.get(url + author);
+    let book = outcome.data;
+    console.log('----------------');
+    console.log('Get Book By Author');
+    console.log('----------------');
+
+    Object.values(book).forEach(item => {
+        console.log(`Author: ${item.author}`);
+        console.log(`Title: ${item.title}`);
+        console.log(`Reviews: ${JSON.stringify(item.reviews)}`);
+        console.log('----------------');
+    });
+
+    console.log('\n');
+}
+
+getBookByAuthor(
+    'https://joshmatparro-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/author/',
+    'Hans Christian Andersen'
+).catch(err => console.log(err.toString()));
+
+
+// Task 13
+
+const getBookByTitle = async (url, title) => {
+    const outcome = await axios.get(url + title);
+    let book = outcome.data;
+    console.log('----------------');
+    console.log('Get Book By Title');
+    console.log('----------------');
+
+    Object.values(book).forEach(item => {
+        console.log(`Author: ${item.author}`);
+        console.log(`Title: ${item.title}`);
+        console.log(`Reviews: ${JSON.stringify(item.reviews)}`);
+        console.log('----------------');
+    });
+
+    console.log('\n');
+}
+
+getBookByTitle(
+    'https://joshmatparro-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/title/',
+    'Fairy tales'
+).catch(err => console.log(err.toString()));
+
 
 module.exports.general = public_users;
