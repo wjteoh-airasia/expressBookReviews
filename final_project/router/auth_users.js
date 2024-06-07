@@ -7,6 +7,14 @@ let users = [];
 
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
+    let userswithsamename = users.filter((user)=>{
+      return user.username === username
+    });
+    if(userswithsamename.length > 0){
+      return true;
+    } else {
+      return false;
+    }
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
@@ -48,7 +56,22 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn;
+    let book = books[isbn]
+    if (book) { //Check book exists
+        let review = req.body.review;
+
+        //if DOB the DOB has been changed, update the DOB 
+        if (review) {
+            book["reviews"] = review
+        }
+        
+        books[isbn] = book;
+        res.send(`Review for the book with IBN ${isbn} was updated. \n ${JSON.stringify(books[isbn])}`);
+    }
+    else {
+        res.send("Unable to find book with IBN!");
+    }
 });
 
 module.exports.authenticated = regd_users;
