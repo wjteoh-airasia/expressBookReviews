@@ -45,7 +45,12 @@ public_users.get('/author/:author',function (req, res) {
       obj[key] = books[key];
       return obj;
     }, {});
-    res.send(filtered_books);
+    const booksByAuthor = Object.entries(filtered_books).map(([isbn, book]) => ({
+        isbn,
+        title: book.title,
+        reviews: book.reviews
+    }));
+    res.json({ booksbyauthor: booksByAuthor });
 });
 
 // Get all books based on title
@@ -58,7 +63,14 @@ public_users.get('/title/:title',function (req, res) {
       obj[key] = books[key];
       return obj;
     }, {});
-    res.send(filtered_books);
+
+    const booksByTitle = Object.entries(filtered_books).map(([isbn, book]) => ({
+        isbn,
+        author: book.author,
+        reviews: book.reviews
+    }));
+    
+    res.json({ booksbytitle: booksByTitle });
 });
 
 //  Get book review
@@ -123,13 +135,13 @@ getBookByISBN(
 
 const getBookByAuthor = async (url, author) => {
     const outcome = await axios.get(url + author);
-    let book = outcome.data;
+    let book = outcome.data.booksbyauthor;
     console.log('----------------');
     console.log('Get Book By Author');
     console.log('----------------');
 
     Object.values(book).forEach(item => {
-        console.log(`Author: ${item.author}`);
+        console.log(`ISBN: ${item.isbn}`);
         console.log(`Title: ${item.title}`);
         console.log(`Reviews: ${JSON.stringify(item.reviews)}`);
         console.log('----------------');
@@ -148,14 +160,14 @@ getBookByAuthor(
 
 const getBookByTitle = async (url, title) => {
     const outcome = await axios.get(url + title);
-    let book = outcome.data;
+    let book = outcome.data.booksbytitle;
     console.log('----------------');
     console.log('Get Book By Title');
     console.log('----------------');
 
-    Object.values(book).forEach(item => {
+    book.forEach(item => {
+        console.log(`ISBN: ${item.isbn}`);
         console.log(`Author: ${item.author}`);
-        console.log(`Title: ${item.title}`);
         console.log(`Reviews: ${JSON.stringify(item.reviews)}`);
         console.log('----------------');
     });
