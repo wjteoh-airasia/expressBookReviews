@@ -72,9 +72,10 @@ public_users.get('/isbn/:isbn', (req, res) =>{
     const booksBasedOnIsbn = (ISBN) => {
         return new Promise((resolve,reject) =>{
           setTimeout(() =>{
-            const book = books.find((b) => b.isbn === ISBN);
+            const book =books.hasOwnProperty(ISBN);
+            console.log(book)
             if(book){
-              resolve(book);
+              resolve(books[ISBN]);
             }else{
               reject(new Error("Book not found"));
             }},1000);
@@ -82,7 +83,7 @@ public_users.get('/isbn/:isbn', (req, res) =>{
     
             
     }
-    booksBasedOnIsbn(ISB).then((book) =>{
+    booksBasedOnIsbn(ISBN).then((book) =>{
       res.json(book);
     }).catch((err)=>{
       res.status(400).json({error:"Book not found"})
@@ -100,8 +101,8 @@ public_users.get('/author/:author',async (req, res) => {
   const booksBasedOnAuthor = (auth) => {
         return new Promise((resolve,reject) =>{
           setTimeout(() =>{
-            const filteredbooks = books.filter((b) => b.author === auth);
-            if(filteredbooks>0){
+            const filteredbooks = Object.values(books).filter(book => book.author === auth);
+            if(filteredbooks.length>0){
               resolve(filteredbooks);
             }else{
               reject(new Error("Book not found"));
@@ -110,8 +111,8 @@ public_users.get('/author/:author',async (req, res) => {
     
             
     }
-    booksBasedOnAuthor(author).then((book) =>{
-      res.json(book);
+    booksBasedOnAuthor(author).then((filteredbooks) =>{
+      res.json(filteredbooks);
     }).catch((err)=>{
       res.status(400).json({error:"Book not found"})
     });
@@ -145,8 +146,8 @@ public_users.get('/title/:title',async (req, res) => {
   const booksBasedOnTitle = (booktitle) => {
         return new Promise((resolve,reject) =>{
           setTimeout(() =>{
-            const filteredbooks = books.filter((b) => b.title === booktitle);
-            if(filteredbooks>0){
+            const filteredbooks = Object.values(books).filter(book => book.title === booktitle);
+            if(filteredbooks.length>0){
               resolve(filteredbooks);
             }else{
               reject(new Error("Book not found"));
@@ -155,8 +156,8 @@ public_users.get('/title/:title',async (req, res) => {
     
             
     }
-    booksBasedOnTitle(title).then((new_books) =>{
-      res.json(new_books);
+    booksBasedOnTitle(title).then((filteredbooks) =>{
+      res.json(filteredbooks);
     }).catch((err)=>{
       res.status(400).json({error:"Book not found"})
     });
@@ -169,7 +170,11 @@ public_users.get('/title/:title',async (req, res) => {
 public_users.get('/review/:isbn',async (req, res) => {
   
   const isbn = req.params.isbn;
-    await res.send(JSON.stringify(books[isbn].review),null,4);
+  if (books[isbn] && books[isbn].reviews) {
+    await res.send(JSON.stringify(books[isbn].reviews),null,4);
+  }else{
+    res.status(404).json({ error: "Reviews not found for the specified ISBN" });
+  }
   
 });
 
