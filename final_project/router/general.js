@@ -32,7 +32,7 @@ const doesExist = (username)=> {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
+  
   
   res.send(JSON.stringify(books,null,4));
 });
