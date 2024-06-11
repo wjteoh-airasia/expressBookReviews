@@ -24,6 +24,7 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
+  const books = req.params.books.
 
   res.send(JSON.stringify(books,null,4));
 });
