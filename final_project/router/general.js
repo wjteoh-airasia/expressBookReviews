@@ -60,7 +60,7 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-    const title = decodURIComponent(req.params.title);
+    const title = decodeURIComponent(req.params.title);
     let book;
     //Sets 'title' as a key parameter
     for(let key in books){
