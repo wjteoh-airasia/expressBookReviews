@@ -15,7 +15,6 @@ public_users.get('/',function (req, res) {
   //Write your code here
 
   res.send(JSON.stringify(books,null,4));
-  return res.status(300).json({message: "URL code works"});
 });
 
 // Get book details based on ISBN
