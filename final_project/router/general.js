@@ -18,7 +18,7 @@ public_users.get('/',function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users('/isbn/:isbn',function (req, res){
+public_users.get('/isbn/:isbn',function (req, res){
     //definition for book and isbn
     const isbn = req.params.isbn;
     const book = books[isbn]
