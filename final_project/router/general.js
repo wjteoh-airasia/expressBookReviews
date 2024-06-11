@@ -21,6 +21,22 @@ public_users.post("/register", (req,res) => {
   return res.status(404).json({message:"Unable to register user."});
 });
 
+//Checks if username does exists
+const doesExist = (username)=>{
+    let userwithsamename = users.filter((user)=>{
+      return user.username === username;
+    });
+    return userwithsamename.length > 0;
+  };
+
+  if(userwithsamename.length > 0){
+     return true;
+  } else {
+    return false;
+  }
+    
+
+  
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
@@ -91,7 +107,6 @@ public_users.get('/title/:title',function (req, res) {
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
 
   const review = req.params.isbn;
   let book;
