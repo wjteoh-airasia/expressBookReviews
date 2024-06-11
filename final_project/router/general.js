@@ -22,21 +22,14 @@ public_users.post("/register", (req,res) => {
 });
 
 //Checks if username does exists
-const doesExist = (username)=>{
+const doesExist = (username)=> {
     let userwithsamename = users.filter((user)=>{
       return user.username === username;
     });
+
     return userwithsamename.length > 0;
-  };
+};
 
-  if(userwithsamename.length > 0){
-     return true;
-  } else {
-    return false;
-  }
-    
-
-  
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
