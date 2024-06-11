@@ -39,10 +39,10 @@ public_users.get('/isbn/:isbn',function (req, res){
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  
+  //Allow name space in URL
   const author = decodeURIComponent(req.params.author);
   let book;
-  
+  //Sets 'author' as a key parameter
   for(let key in books){
     if(books[key].author === author){
        book = books[key];
@@ -60,8 +60,22 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const title = decodURIComponent(req.params.title);
+    let book;
+    //Sets 'title' as a key parameter
+    for(let key in books){
+      if(books[key].title === title){
+         book = books[key];
+         break;
+      }
+    }
+
+    if (book){
+        res.json(book);
+    }  else{
+         res.status(404).json({message: "Book not found"})
+    }
+
 });
 
 //  Get book review
