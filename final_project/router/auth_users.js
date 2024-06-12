@@ -21,6 +21,7 @@ const authenticatedUser = (username, password) => {
 regd_users.post("/login", (req,res) => {
   const username = req.body.username;
   const password = req.body.password;
+ 
 
   if (!username || !password){
     return res.status(400).json({message: "Username and password are required"});
