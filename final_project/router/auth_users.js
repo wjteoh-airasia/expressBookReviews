@@ -76,7 +76,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
 
 // Get all reviews for  a specific book
-regd_users.get("/auth/review:isbn", (req, res) => {
+regd_users.get("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
 
     //FIlter the reviews array to get only the reviews for the book with the specified ISBN
