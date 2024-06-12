@@ -1,6 +1,7 @@
 const express = require('express');
 let books = require("./booksdb.js");
-let { authenticated: regd_users, isValid, users} = require("./auth_users.js");
+let { authenticated: isValid, users} = require("./auth_users.js");
+let regd_users = require("./auth_users");
 const public_users = express.Router();
 
 
