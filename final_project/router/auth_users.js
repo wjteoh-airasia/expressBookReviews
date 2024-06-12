@@ -5,6 +5,9 @@ const regd_users = express.Router();
 
 let users = [];
 
+let reviews = [];
+
+
 //returns a boolean if the username is valid
 const isValid = (username)=>{ 
   let user = users.find(user => user.username === username);
@@ -43,9 +46,34 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const isbn = req.params.isbn;
+    const username = req.session.username; // Assummng username is stored in session
+    const review = req.query.review; // Assuming review is sent as a query parameter
+
+    if (!review) {
+        return res.status(400).json({message:'Review is required'});
+    }
+
+    // FInd an existing review by the same user for the same ISBN
+    let existingReview = reviews.find(r => r.username === username && r.isbn === isbn);
+
+       if (existingReview) {
+        // If an existing review is found, update it
+        existingReview.review = review; 
+    } else {
+        // If no existing review is found, add a new one
+        const newReview = {
+          isbn,
+          username,
+          review,
+          id: reviews.length + 1, // This is a simple way to generate a unique ID
+        };
+        reviews.push(newReview);
+        }
+
+    res.status(200).json({message: 'Review added/updated successfully'});
 });
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
