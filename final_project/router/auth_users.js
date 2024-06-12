@@ -76,13 +76,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
 
 // Get all reviews for  a specific book
-req_users.get("/auth/review:isbn", (req, res) => {
+regd_users.get("/auth/review:isbn", (req, res) => {
     const isbn = req.params.isbn;
 
     //FIlter the reviews array to get only the reviews for the book with the specified ISBN
-    const bookReviews = review.filter(review => review.isbn === isbn);
+    const bookReviews = reviews.filter(review => review.isbn === isbn);
 
-    if(bookReviews.lengnth >0) {
+    if(bookReviews.length >0) {
         res.status(200).json(bookReviews);
     } else {
         res.status(404).json({message: "No reviews found for this book"});
