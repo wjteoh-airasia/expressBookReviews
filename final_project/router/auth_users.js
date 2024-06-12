@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
+const {doesExist} = require("./general.js")
 
 let users = [];
 
@@ -28,6 +29,10 @@ regd_users.post("/login", (req,res) => {
 
   if (!username || !password){
     return res.status(400).json({message: "Username and password are required"});
+  }
+
+  if (!doesExist(username)){
+    return res.status(401).json({message: "Invalid username"});
   }
 
   if (authenticatedUser(username, password)) {
