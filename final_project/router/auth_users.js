@@ -49,9 +49,9 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
     const username = req.session.username; // Assummng username is stored in session
-    const review = req.query.review; // Assuming review is sent as a query parameter
-
-    if (!review) {
+    const reviews = req.query.review; // Assuming review is sent as a query parameter
+      
+    if (!reviews) {
         return res.status(400).json({message:'Review is required'});
     }
 
@@ -60,13 +60,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
        if (existingReview) {
         // If an existing review is found, update it
-        existingReview.review = review; 
+        existingReview.review = reviews; 
     } else {
         // If no existing review is found, add a new one
         const newReview = {
           isbn,
           username,
-          review,
+          reviews,
           id: reviews.length + 1, // This is a simple way to generate a unique ID
         };
         reviews.push(newReview);
@@ -92,3 +92,4 @@ regd_users.get("/auth/review/:isbn", (req, res) => {
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
+module.exports.books = books;
