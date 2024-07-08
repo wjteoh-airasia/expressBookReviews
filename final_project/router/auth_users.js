@@ -5,6 +5,7 @@ const regd_users = express.Router();
 
 let users = [];
 
+//check username is valid
 const isValid = (username)=>{ 
 let filtered_users = users.filter((user)=> user.username === user);
     if(filtered_users){
@@ -13,6 +14,7 @@ let filtered_users = users.filter((user)=> user.username === user);
     return false;
 }
 
+//check password and username match in records
 const authenticatedUser = (username,password)=>{ 
 if(isValid(username)){
         let filtered_users = users.filter((user)=> (user.username===username)&&(user.password===password));
@@ -26,29 +28,8 @@ if(isValid(username)){
     
 
 }
-regd_users.post("/register", (req,res) => {
-    //Write your code here
-    const username = req.body.username;
-    const password = req.body.password;
-    if(username&&password){
-        const present = users.filter((user)=> user.username === username)
-        if(present.length===0){
-            users.push({"username":req.body.username,"password":req.body.password});
-            return res.status(201).json({message:"New user created successfully!"})
-        }
-        else{
-          return res.status(400).json({message:"User already exists!"})
-        }
-    }
-    else if(!username && !password){
-      return res.status(400).json({message:"Check username and password!"})
-    }
-    else if(!username || !password){
-      return res.status(400).json({message:"Check username and password"})
-    }
-  
-   
-  });
+
+
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
@@ -79,7 +60,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   return res.status(201).json({message:"New review added successfully!"})
   
 });
-
+//delete a review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
     let ISBN = req.params.isbn;
     books[ISBN].reviews = {}
