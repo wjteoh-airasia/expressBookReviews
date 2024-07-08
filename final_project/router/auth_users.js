@@ -21,12 +21,9 @@ if(isValid(username)){
         if(filtered_users){
             return true;
         }
-        return false;
-       
+        return false;       
     }
     return false;
-    
-
 }
 
 //register new user
@@ -49,9 +46,7 @@ regd_users.post("/register", (req,res) => {
     }
     else if(!username || !password){
       return res.status(400).json({message:"Check username and password"})
-    }
-  
-   
+    }   
   });
 
 //only registered users can login
@@ -61,15 +56,13 @@ regd_users.post("/login", (req,res) => {
     if(!authenticatedUser(user,pass)){
         return res.status(403).json({message:"User not authenticated"})
     }
-
     let accessToken = jwt.sign({
         data: user
     },'access',{expiresIn:60*60})
     req.session.authorization = {
         accessToken
     }
-    res.send("User logged in Successfully")
- 
+    res.send("User logged in Successfully") 
 });
 
 
@@ -80,8 +73,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   let details = req.query.review;
   let rev = {user:userd,review:details}
   books[ISBN].reviews = rev;
-  return res.status(201).json({message:"New review added successfully!"})
-  
+  return res.status(201).json({message:"New review added successfully!"})  
 });
 
 //delete a review
@@ -89,7 +81,6 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     let ISBN = req.params.isbn;
     books[ISBN].reviews = {}
     return res.status(200).json({messsage:"Review has been deleted!"})
-
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
