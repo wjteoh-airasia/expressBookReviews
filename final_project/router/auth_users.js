@@ -5,7 +5,7 @@ const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
+const isValid = (username)=>{ 
 let filtered_users = users.filter((user)=> user.username === user);
     if(filtered_users){
         return true;
@@ -13,7 +13,7 @@ let filtered_users = users.filter((user)=> user.username === user);
     return false;
 }
 
-const authenticatedUser = (username,password)=>{ //returns boolean
+const authenticatedUser = (username,password)=>{ 
 if(isValid(username)){
         let filtered_users = users.filter((user)=> (user.username===username)&&(user.password===password));
         if(filtered_users){
@@ -34,14 +34,14 @@ regd_users.post("/register", (req,res) => {
         const present = users.filter((user)=> user.username === username)
         if(present.length===0){
             users.push({"username":req.body.username,"password":req.body.password});
-            return res.status(201).json({message:"USer Created successfully"})
+            return res.status(201).json({message:"New user created successfully!"})
         }
         else{
-          return res.status(400).json({message:"Already exists"})
+          return res.status(400).json({message:"User already exists!"})
         }
     }
     else if(!username && !password){
-      return res.status(400).json({message:"Bad request"})
+      return res.status(400).json({message:"Check username and password!"})
     }
     else if(!username || !password){
       return res.status(400).json({message:"Check username and password"})
