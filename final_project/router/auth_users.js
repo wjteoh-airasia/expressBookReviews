@@ -30,27 +30,22 @@ if(isValid(username)){
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
-  const username = req.body.username;
-    const password = req.body.password;
-    if(username&&password){
-        const present = users.filter((user)=> user.username === username)
-        if(present.length===0){
-            users.push({"username":req.body.username,"password":req.body.password});
-            return res.status(201).json({message:"New user created successfully! "})
-        }
-        else{
-          return res.status(400).json({message:"UserName already exists, please choose a new UserName."})
-        }
+  let user = req.body.username;
+    let pass = req.body.password;
+    if(!authenticatedUser(user,pass)){
+        return res.status(403).json({message:"User not authenticated"})
     }
-    else if(!username && !password){
-      return res.status(400).json({message:"Bad request"})
+
+    let accessToken = jwt.sign({
+        data: user
+    },'access',{expiresIn:60*60})
+    req.session.authorization = {
+        accessToken
     }
-    else if(!username || !password){
-      return res.status(400).json({message:"Check username and password"})
-    }
-  
-  //return res.status(300).json({message: "Yet to be implemented"});
+    res.send("User logged in Successfully")
+ 
 });
+
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
