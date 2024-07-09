@@ -45,24 +45,59 @@ public_users.get('/',function (req, res) {
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  const isbn = req.params.isbn;
-    res.send(books[isbn])
+  let myPromise1= new Promise((resolve,reject) =>{
+        setTimeout(() =>{
+            resolve(books)
+        },0 )})
+    myPromise1.then((successMessage)=>{
+        const isbn = req.params.isbn
+        res.send(books[isbn])
+    })     
+  
+  
+  //const isbn = req.params.isbn;
+    //res.send(books[isbn])
   //return res.status(300).json({message: "ISBN"});
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  const authors = req.params.author;
-  let filtered_author = Object.values(books).filter(books => books.author === authors);
-  res.send(filtered_author);
+  let myPromise1= new Promise((resolve,reject) =>{
+        setTimeout(() =>{
+            resolve(books)
+        },0 )})
+    myPromise1.then((successMessage)=>{
+        const authors = req.params.author
+        let filtered_author = Object.values(books).filter(books => books.author === authors);
+        res.send(filtered_author);
+    })     
+  
+  
+  
+  //const authors = req.params.author;
+  //let filtered_author = Object.values(books).filter(books => books.author === authors);
+  //res.send(filtered_author);
   //return res.status(300).json({message: "Author"});
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  const titles = req.params.title;
-  let filtered_title = Object.values(books).filter(books => books.title === titles);
-  res.send(filtered_title);
+  public_users.get('/title/:title',function (req, res) {
+    let myPromise1= new Promise((resolve,reject) =>{
+        setTimeout(() =>{
+            resolve(books)
+        },0 )})
+    myPromise1.then((successMessage)=>{
+        const titles = req.params.title;
+        let filtered_title = Object.values(books).filter(books => books.title === titles);
+        res.send(filtered_title);
+    })     
+  
+  
+  
+  //const titles = req.params.title;
+  //let filtered_title = Object.values(books).filter(books => books.title === titles);
+  //res.send(filtered_title);
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
