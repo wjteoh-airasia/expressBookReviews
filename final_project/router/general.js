@@ -32,7 +32,14 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
+    let myPromise1= new Promise((resolve,reject) =>{
+        setTimeout(() =>{
+            resolve(books)
+        },0 )})
+    myPromise1.then((successMessage)=>{
+        res.send(JSON.stringify(books,null,4))
+    })    
+  //res.send(JSON.stringify(books,null,4));
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
