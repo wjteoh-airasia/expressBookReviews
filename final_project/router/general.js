@@ -83,6 +83,23 @@ public_users.get('/author/:author', (req, res) => {
   }
 });
 
+public_users.get('/author/:author/async', async (req, res) => {
+  const author = req.params.author;
+  
+  try {
+    const response = await axios.get(`http://localhost:5000/author/${author}`);
+    const booksByAuthor = response.data;
+    if (booksByAuthor.length > 0) {
+      res.status(200).json(booksByAuthor);
+    } else {
+      res.status(404).json({ message: "Books by this author not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching books by author', error: error.message });
+  }
+});
+
+
 // Get all books based on title
 public_users.get('/title/:title', (req, res) => {
   //Write your code here
