@@ -3,8 +3,12 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
-const axios = require("axios").default;
 
+// To simulate the delay of the server
+const simulate = (callback) =>
+  new Promise((resolve) => setTimeout(() => resolve(callback()), 1000));
+
+// Register a new user
 public_users.post("/register", (req, res) => {
   const user = req.body;
 
@@ -21,44 +25,54 @@ public_users.post("/register", (req, res) => {
 });
 
 // Get the book list available in the shop
-public_users.get("/", function (req, res) {
-  return res.status(300).json(books);
+public_users.get("/", async function (req, res) {
+  const response = await simulate(() => books);
+  return res.status(300).json(response);
 });
 
 // Get book details based on ISBN
-public_users.get("/isbn/:isbn", function (req, res) {
+public_users.get("/isbn/:isbn", async function (req, res) {
   const isbn = req.params["isbn"];
-  return res.status(300).json(books[isbn]);
+  const response = await simulate(() => books[isbn]);
+  return res.status(300).json(response);
 });
 
 // Get book details based on author
-public_users.get("/author/:author", function (req, res) {
+public_users.get("/author/:author", async function (req, res) {
   const author = req.params["author"];
 
-  const booksKeys = Object.keys(books);
+  const response = await simulate(() => {
+    const booksKeys = Object.keys(books);
 
-  const booksByAuthor = {};
+    const booksByAuthor = {};
 
-  booksKeys.forEach((key) => {
-    if (books[key].author === author) booksByAuthor[key] = books[key];
+    booksKeys.forEach((key) => {
+      if (books[key].author === author) booksByAuthor[key] = books[key];
+    });
+
+    return booksByAuthor;
   });
 
-  return res.status(300).json(booksByAuthor);
+  return res.status(300).json(response);
 });
 
 // Get all books based on title
-public_users.get("/title/:title", function (req, res) {
+public_users.get("/title/:title", async function (req, res) {
   const title = req.params["title"];
 
-  const booksKeys = Object.keys(books);
+  const response = await simulate(() => {
+    const booksKeys = Object.keys(books);
 
-  const booksByTitle = {};
+    const booksByTitle = {};
 
-  booksKeys.forEach((key) => {
-    if (books[key].title === title) booksByTitle[key] = books[key];
+    booksKeys.forEach((key) => {
+      if (books[key].title === title) booksByTitle[key] = books[key];
+    });
+
+    return booksByTitle;
   });
 
-  return res.status(300).json(booksByTitle);
+  return res.status(300).json(response);
 });
 
 //  Get book review
