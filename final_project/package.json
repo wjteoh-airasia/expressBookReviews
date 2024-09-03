@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "###Book Reviews Back-End Application\n This project is a Book Reviews Back-End Application developed using Node.js and Express.js. It is part of a Coursera course, designed to provide hands-on experience in building robust and scalable back-end services.",
   "main": "index.js",
-  "type": "module",
+ 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
