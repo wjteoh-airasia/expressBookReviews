@@ -58,7 +58,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
       return res.status(200).json(book); // Send the book data in the response
     })
     .catch((error) => {
-      return res.status(404).json({ message: error }); // Send error message if book not found
+      return res.status(404).json({ message: "Book Not found!!" }); // Send error message if book not found
     });
  });
   
@@ -87,14 +87,37 @@ public_users.get('/author/:author',function (req, res) {
       return res.status(200).json(books); // Send the books data in the response
     })
     .catch((error) => {
-      return res.status(404).json({ message: error }); // Send error message if no books found
+      return res.status(404).json({ message: "Book Not found!!" }); // Send error message if no books found
     });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  // Create a Promise to search for books by title
+  const getBooksByTitle = (title) => {
+    return new Promise((resolve, reject) => {
+      const booksByTitle = Object.values(books).filter(book => book.title === title);
+      
+      // If books are found, resolve the Promise with the books data
+      if (booksByTitle.length > 0) {
+        resolve(booksByTitle);
+      } else {
+        // Reject the Promise if no books are found
+        reject("No books found with this title");
+      }
+    });
+  };
+
+  const title = req.params.title;
+
+  // Use the Promise to fetch books by title
+  getBooksByTitle(title)
+    .then((books) => {
+      return res.status(200).json(books); // Send the books data in the response
+    })
+    .catch((error) => {
+      return res.status(404).json({ message: "Book Not found!!" }); // Send error message if no books found
+    });
 });
 
 //  Get book review
