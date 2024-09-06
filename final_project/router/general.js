@@ -38,8 +38,28 @@ public_users.get('/',function (req, res) {
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  // Create a Promise to fetch the book details by ISBN
+  const getBookByISBN = (isbn) => {
+    return new Promise((resolve, reject) => {
+      const book = books[isbn]; // Find the book by ISBN
+      if (book) {
+        resolve(book); // Resolve the Promise with the book data
+      } else {
+        reject("Book not found"); // Reject the Promise if the book is not found
+      }
+    });
+  };
+
+  const isbn = req.params.isbn;
+
+  // Use the Promise to fetch the book by ISBN
+  getBookByISBN(isbn)
+    .then((book) => {
+      return res.status(200).json(book); // Send the book data in the response
+    })
+    .catch((error) => {
+      return res.status(404).json({ message: error }); // Send error message if book not found
+    });
  });
   
 // Get book details based on author
