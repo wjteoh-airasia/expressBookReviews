@@ -39,7 +39,9 @@ regd_users.post("/login", (req,res) => {
     }
     return res.status(200).json({message: "User logged in successfully!"})
   }
-  return res.status(208).json({message: "Unable to log in. Please enter correct username and password!"});
+  return res.status(208).json({
+    message: "Unable to log in. Please enter correct username and password!"}
+);
 });
 
 // Add a book review
@@ -61,6 +63,11 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         return res.status(400).json({nessage: "Please check review and username!"})
     }
 });
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+
+    
+})
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
