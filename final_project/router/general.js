@@ -17,7 +17,7 @@ public_users.post("/register", (req,res) => {
         return res.status(404).json({message: "User already exists!"});
     }
   }else {
-    return res.status(404).json({message: "Unable to register user!"})
+    return res.status(400).json({message: "Unable to register user!"})
     }
 });
 
@@ -44,9 +44,9 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
   const author = req.params.author;
-  const book = books.filter(book => book.author === author)
-  if (book) {
-    return res.status(200).send(JSON.stringify(book, null, 4));
+  const booksByAuthor = Object.values(books).filter(book => book.author.toLowerCase() === author.toLowerCase())
+  if (booksByAuthor.length > 0) {
+    return res.status(200).send(JSON.stringify(booksByAuthor, null, 4));
   }else {
   return res.status(404).json({message: "Book not found!"});
   }
@@ -56,9 +56,9 @@ public_users.get('/author/:author',function (req, res) {
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
   const title = req.params.title;
-  const book = books[title];
-  if (book) {
-    return res.status(200).send(JSON.stringify(book, null, 4));
+  const booksByTitle = Object.values(books).filter(book => book.title.toLowerCase() === title.toLowerCase());
+  if (booksByTitle.length > 0) {
+    return res.status(200).send(JSON.stringify(booksByTitle, null, 4));
   }else {
   return res.status(404).json({message: "Book not found!"});
   }
@@ -67,13 +67,17 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  const isbn = req.params.review;
+  const isbn = req.params.isbn;
   const book = books[isbn];
   if (book) {
-    return res.status(200).json(book[review]);
-  }else {
-  return res.status(404).json({message: "Book not found!"});
-  }
+    if (book.reviews) {
+        return res.status(200).json(book.reviews);
+    }else {
+        return res.status(200).json({message: "No review found for this book!"});
+    }
+   }else {
+    return res.status(404).json({message: "Book not found!"});
+    }
 });
 
 module.exports.general = public_users;
