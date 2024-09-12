@@ -11,21 +11,22 @@ app.use(express.json());
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}));
 
 app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+    //Write the authenication mechanism here
 
-const token = req.session.accessToken;
+    if (req.session.authorization) {
+        let token = req.session.authorization['accessToken'];
 
-if (!token) {
-    return res.status(401).join({ message: "Unauthorized access. No token provided." });
-}
-
-jwt.verify(token, "fingerprint_customer", (err, user) => {
-    if (err) {
-        return res.status(403).json({ message: "Invalid or expired token." });
+        jwt.verify(token, "fingerprint_customer", (err, user) => {
+            if (!err) {
+                req.user = user;
+                next();
+            } else {
+                return res.status(403).json({ message: "User not authenticated" })
+            }
+        });
+    } else {
+        return res.status(403).json({ message: "user not logged in" });
     }
-    req.user = user;
-    next();
-});
 });
  
 const PORT =5000;
