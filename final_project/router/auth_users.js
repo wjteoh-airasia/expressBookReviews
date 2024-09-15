@@ -17,7 +17,7 @@ const isValid = (username)=>{ //returns boolean
 
 const authenticatedUser = (username,password)=>{ //returns boolean
 //write code to check if username and password match the one we have in records.
-    const user = users.find(user => user.username === username && user.password === password)
+    const user = users.filter(user => user.username === username && user.password === password)
     if (user.length > 0) {
         return true;
     }else {
