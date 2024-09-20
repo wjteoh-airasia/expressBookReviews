@@ -3,7 +3,11 @@ let books = {
       2: {"author": "Hans Christian Andersen","title": "Fairy tales", "reviews": {} },
       3: {"author": "Dante Alighieri","title": "The Divine Comedy", "reviews": {} },
       4: {"author": "Unknown","title": "The Epic Of Gilgamesh", "reviews": {} },
-      5: {"author": "Unknown","title": "The Book Of Job", "reviews": {} },
+      5: {"author": "Unknown","title": "The Book Of Job", "reviews": {
+        "review1": "As a young conservative, David Brock smeared Hill, who accused the Supreme Court justice of sexual harassment. Now, in a new book, Brock is denouncing Thomas and the court’s rightward tilt — and contending with his own complicated past.",
+        "review2": "who accused the Supreme Court justice of sexual harassment. Now, in a new book, Brock is denouncing Thomas and the court’s rightward tilt — and contending with his own complicated past.",
+        "review3": "Now, in a new book, Brock is denouncing Thomas and the court’s rightward tilt — and contending with his own complicated past."
+      } },
       6: {"author": "Unknown","title": "One Thousand and One Nights", "reviews": {} },
       7: {"author": "Unknown","title": "Nj\u00e1l's Saga", "reviews": {} },
       8: {"author": "Jane Austen","title": "Pride and Prejudice", "reviews": {} },
