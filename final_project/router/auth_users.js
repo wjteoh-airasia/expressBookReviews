@@ -88,8 +88,6 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   } else {
     return res.status(404).json({ message: "Book not found" });
   }
-
-  return res.status(300).json({message: "Yet to be implemented"});
 });
 
 module.exports.authenticated = regd_users;
