@@ -12,12 +12,12 @@ app.use(express.json());
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}));
 
 app.use("/customer/auth/*", function auth(req,res,next){
-    const token = req.body.authourization;
+    const token = req.session.authorization.jwtToken
     if (!token){
         res.status(401).json({message:"Please login"});
         return ;
     }else{
-        jwt.verify(token('jwtToken'),'authentication',(error,user) =>{
+        jwt.verify(token,'authentication',(error,user) =>{
             if(error){
                 res.status(401).json({message:"Invalid token"});
                 return; 
