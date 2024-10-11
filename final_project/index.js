@@ -12,50 +12,26 @@ app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUni
 
 app.use("/customer/auth/*", function auth(req,res,next){
 //Write the authenication mechanism here
-// Middleware for user authentication
-app.use("/user", (req, res, next) => {
-    // Check if user is authenticated
+// Check if user is logged in and has valid access token
     if (req.session.authorization) {
-        let token = req.session.authorization['accessToken']; // Access Token
-        
-        // Verify JWT token for user authentication
+        let token = req.session.authorization['accessToken'];
+        // Verify JWT token
         jwt.verify(token, "access", (err, user) => {
             if (!err) {
-                req.user = user; // Set authenticated user data on the request object
+                req.user = user;
                 next(); // Proceed to the next middleware
             } else {
-                return res.status(403).json({ message: "User not authenticated" }); // Return error if token verification fails
+                return res.status(403).json({ message: "User not authenticated" });
             }
         });
-        
-        // Return error if no access token is found in the session
     } else {
         return res.status(403).json({ message: "User not logged in" });
     }
-});
 });
  
 const PORT =5000;
 
 app.use("/customer", customer_routes);
 app.use("/", genl_routes);
-
-// Login endpoint
-app.post("/login", (req, res) => {
-    const user = req.body.user;
-    if (!user) {
-        return res.status(404).json({ message: "Body Empty" });
-    }
-    // Generate JWT access token
-    let accessToken = jwt.sign({
-        data: user
-    }, 'access', { expiresIn: 60 * 60 });
-
-    // Store access token in session
-    req.session.authorization = {
-        accessToken
-    }
-    return res.status(200).send("User successfully logged in");
-});
 
 app.listen(PORT,()=>console.log("Server is running"));
