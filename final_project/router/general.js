@@ -32,7 +32,7 @@ public_users.post("/register", (req, res) => {
       res
         .status(201)
         // .json({ message: `The user ${username} has been registered.` });
-        .json(users)
+        .send("Customer successfully registered. Now you can login.")
     );
   } catch (e) {
     return res.status(e.status).send(e.message);

@@ -53,7 +53,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
       throw e;
     }
     book.reviews[response] = req.body.review;
-    return res.status(203).send("The review has been updated");
+    return res.status(203).send(`The review for the book with ISBN ${isbn} has been added/updated`);
   } catch (e) {
     return res.status(e.status).send(e.message);
   }
@@ -92,7 +92,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
       throw e;
     }
     delete books[isbn].reviews[response];
-    res.send("The review has been deleted.");
+    res.send(`Reviews for the ISBN ${isbn} posted by the user ${response} deleted.`);
   } catch (e) {
     return res.status(e.status).send(e.message);
   }
