@@ -96,7 +96,6 @@ public_users.get("/title/:title", async (req, res) => {
       e.status = 404;
       throw e;
     }
-
     return res.status(200).json(filteredBook);
   } catch (e) {
     return res.status(e.status).send(e.message);
