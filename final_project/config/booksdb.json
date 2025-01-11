@@ -1,0 +1,13 @@
+[
+    {"author": "Chinua Achebe","title": "Things Fall Apart", "reviews":[{"reviewer":"Phoeng","comment":"good bro","rating":5}],"ISBN":1},
+    {"author": "Hans Christian Andersen","title": "Fairy tales", "reviews": [] ,"ISBN":2},
+    {"author": "Dante Alighieri","title": "The Divine Comedy", "reviews": [],"ISBN":3},
+    {"author": "Unknown","title": "The Epic Of Gilgamesh", "reviews": [],"ISBN":4},
+    {"author": "Unknown","title": "The Book Of Job", "reviews": [],"ISBN":5},
+    {"author": "Unknown","title": "One Thousand and One Nights", "reviews": [],"ISBN":6},
+    {"author": "Unknown","title": "Nj\u00e1l's Saga", "reviews": [],"ISBN":7},
+    {"author": "Jane Austen","title": "Pride and Prejudice", "reviews": [] ,"ISBN":8},
+    {"author": "Honor de Balzac","title": "Le P\u00e8re Goriot", "reviews":[],"ISBN":9},
+    {"author": "Samuel Beckett","title": "Molloy, Malone Dies, The Unnamable, the trilogy", "reviews": [] ,"ISBN":10}
+]
+
