@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import * as userController from "../controller/userController.js";
-//let books = require("./booksdb.js");
+import session from 'express-session';
 
 const regd_users = express.Router();
 
@@ -16,21 +16,25 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 //write code to check if username and password match the one we have in records.
 }
 
-regd_users.post("/register",userController.regisUser);
-//only registered users can login
-regd_users.post("/login", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
 
-// Add a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+regd_users.post("/register",userController.regisUser);
+regd_users.post("/login", (req,res,next)=>{
+  if(req.session.authorization){
+    console.log("pass authorized first in auth_user");
+    let token = req.session.authorization['accessToken'];
+    jwt.verify(token, "access", (err, user) => {
+      console.log("in jwt verify");
+      if (!err) {        
+          console.log("pass jwt");
+          req.user = user; // Set authenticated user data on the request object
+          next(); // Proceed to the next middleware
+      } else {
+          return res.status(403).json({ message: "User not authenticated" }); // Return error if token verification fails
+      }
+    });
+  }
+},userController.loginUser);
+regd_users.post("/logout",userController.logoutUser);
+regd_users.put("/review/:isbn",userController.userReview);
 
 export default regd_users;
-
-//module.exports.authenticated = regd_users;
-//module.exports.isValid = isValid;
-//module.exports.users = users;
