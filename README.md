@@ -18,6 +18,7 @@ npm install
 ```bash
 npm start
 ```
+4.Edit Mongo_URI with your MongoURI in config.js  
 ## :pencil: Contact
 Email: pholapcondo11@gmail.com  
 GitHub: PhoengZ
