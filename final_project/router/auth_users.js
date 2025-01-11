@@ -10,6 +10,7 @@ regd_users.post("/register",userController.regisUser);
 regd_users.post("/login",userController.loginUser);
 regd_users.post("/logout",userController.logoutUser);
 regd_users.put("/review/:isbn",userController.userReview);
+regd_users.delete("/review/:isbn",userController.deleteReview);
 
 regd_users.use("/login", (req,res,next)=>{
   if(req.session.authorization){

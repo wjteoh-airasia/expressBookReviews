@@ -2,7 +2,6 @@ import express, { urlencoded } from 'express';
 import dotenv from "dotenv";
 import cors from "cors";
 import "./config/db.js";
-import jwt from 'jsonwebtoken';
 import session from 'express-session';
 
 import customer_route from "./router/auth_users.js";

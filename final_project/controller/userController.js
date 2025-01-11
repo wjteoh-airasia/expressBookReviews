@@ -1,6 +1,5 @@
 import User from "../model/userModel.js";
 import books from "../model/bookModel.js";
-import session from "express-session";
 import jwt from "jsonwebtoken";
 
 export async function loginUser(req,res){
@@ -74,6 +73,18 @@ export async function userReview(req,res) {
         }
     }else{
         res.status(500).json({message:"Not found a book"})
+    }
+}
+export async function deleteReview(req,res) {
+    const isbn = req.params.isbn;
+    const {username} = req.body;
+    const book = await books.find({ISBN:isbn});
+    if (book.length != 0){
+        book[0].reviews = book[0].reviews.filter(rev=>rev.reviewer != username);
+        await book[0].save();
+        res.status(200).json({message:"Delete successfull"});
+    }else{
+        res.status(500).json({message:"Book not found"})
     }
 }
 export async function logoutUser(req, res) {
