@@ -110,27 +110,39 @@ public_users.get('/author/:author', async function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', async function (req, res) {
   //Write your code here
   const bookTitle = req.params.title;
   const bookDetails = [];
 
-  for (let id in books) {
-    if (books[id].title.toLowerCase() === bookTitle.toLowerCase()) {
-      bookDetails.push({
-        isbn: books[id].isbn,
-        author: books[id].author,
-        title: books[id].title,
-        reviews: books[id].reviews
-      });
+  try {
+    const response = await axios.get('https://tgilly93-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/');
+
+    for (let id in books) {
+      if (books[id].title.toLowerCase() === bookTitle.toLowerCase()) {
+        bookDetails.push({
+          isbn: books[id].isbn,
+          author: books[id].author,
+          title: books[id].title,
+          reviews: books[id].reviews
+        });
+      }
     }
+
+    if (bookDetails.length > 0) {
+      res.status(200).json(bookDetails);
+    } else {
+      res.status(404).json({ message: `No books with title: ${bookTitle}`});
+    }
+  } catch (error) {
+    console.error('Error fetching books:', error);
+    res.status(500).json({ message: 'Error fetching books by title.', error: error.message });
+    
   }
 
-  if (bookDetails.length > 0) {
-    return res.status(200).json(bookDetails);
-  } else {
-    return res.status(404).json({ message: `No books with title: ${bookTitle}`});
-  }
+  
+
+  
 });
 
 //  Get book review
