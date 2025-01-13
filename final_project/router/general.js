@@ -5,33 +5,35 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
 const doesExist = (username) => {
-  let userswithsamename = users.filter((user) => {
-    return user.username === username;
-  });
+  console.log("Checking if user exists:", username); // Debugging statement
 
-  if (userswithsamename.length > 0) {
-    return true;
-  } else {
-    return false;
+  for (let i = 0; i < users.length; i++) {
+    console.log("Checking against user:", users[i].username); // Debugging
+
+    if (users[i].username === username) {
+      return true;
+    }
   }
-}
+
+  return false;
+};
 
 
-public_users.post("/register", (req,res) => {
-  //Write your code here
+public_users.post("/register", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
   if (username && password) {
     if (!doesExist(username)) {
-      users.push({"username": username, "password": password});
-      return res.status(200).json({ message: "User successfully registered.You are now able to login!"});
+      users.push({ username, password });
+      console.log("New user registered:", users);
+      return res.status(200).json({ message: "User successfully registered. You are eligible for login!" });
     } else {
-      return res.status(404).json({ message: "User already exists!"});
+      return res.status(409).json({ message: "User already exists!" });
     }
   }
 
-  return res.status(404).json({ message: "Unable to register. Invalid username or password."});
+  return res.status(400).json({ message: "Invalid username or password. Please try again." });
 });
 
 // Get the book list available in the shop
