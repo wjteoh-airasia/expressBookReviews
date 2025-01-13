@@ -28,9 +28,15 @@ app.use("/customer/auth/*", function auth(req,res,next){
         return res.status(403).json({ message: "User not logged in!"});
     }
 });
+
+app.use((req, res, next) => {
+    console.log(`Received request: ${req.method} ${req.url}`);
+    next();
+  });
  
 const PORT =5000;
 
+console.log("Customer routes are mounted at /customer");
 app.use("/customer", customer_routes);
 app.use("/", genl_routes);
 
