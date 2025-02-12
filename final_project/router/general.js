@@ -45,7 +45,7 @@ public_users.get('/title/:title',function (req, res) {
   const title = req.params.title;
   const istitle = Object.values(books).filter(book => book.title === title);
   if(istitle.length > 0){
-    return res.json(istitle);
+    return res.status(200).json(istitle);
   }
   else{
     return res.status(404).json({message:'Book Not found'});
