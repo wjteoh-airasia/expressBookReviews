@@ -120,16 +120,39 @@ public_users.get('/author/:author', function(req,res) {
 
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+// public_users.get('/title/:title',function (req, res) {
+//   const title = req.params.title;
+//   const istitle = Object.values(books).filter(book => book.title === title);
+//   if(istitle.length > 0){
+//     return res.status(200).json(istitle);
+//   }
+//   else{
+//     return res.status(404).json({message:'Book Not found'});
+//   }
+// });
+
+
+// Task 13
+// Get all books based on title
+public_users.get('/title/:title', function(req,res){
   const title = req.params.title;
-  const istitle = Object.values(books).filter(book => book.title === title);
-  if(istitle.length > 0){
+
+  new Promise((resolve,reject) => {
+    const istitle = Object.values(books).filter(book => book.title === title);
+    if(istitle.length > 0){
+      resolve(istitle);
+    } else{
+      reject('Book not found for the title');
+    }
+  })
+  .then((istitle)=>{
     return res.status(200).json(istitle);
-  }
-  else{
-    return res.status(404).json({message:'Book Not found'});
-  }
+  })
+  .catch((error)=>{
+    return res.status(404).json({message:error});
+  })
 });
+
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
