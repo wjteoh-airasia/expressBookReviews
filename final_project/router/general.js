@@ -84,16 +84,40 @@ public_users.get('/isbn/:isbn', async (req,res) => {
 
 
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+// public_users.get('/author/:author',function (req, res) {
+//   const author = req.params.author;
+//   const isMatch = Object.values(books).filter(book => book.author === author);
+//     if(isMatch.length > 0){
+//       return res.json(isMatch);
+//     }
+//     else{
+//       return res.status(404).json({message:'Book not found'})
+//     }
+// });
+
+
+
+// Task 12
+// Get book details based on author
+public_users.get('/author/:author', function(req,res) {
   const author = req.params.author;
-  const isMatch = Object.values(books).filter(book => book.author === author);
+
+  new Promise((resolve,reject) => {
+    const isMatch = Object.values(books).filter(book => book.author === author);
     if(isMatch.length > 0){
-      return res.json(isMatch);
+      resolve(isMatch)
+    } else {
+      reject('Book not found for the author')
     }
-    else{
-      return res.status(404).json({message:'Book not found'})
-    }
+  })
+  .then((isMatch)=>{
+    res.status(200).json(isMatch);
+  })
+  .catch((error)=>{
+    res.status(404).json({message:error});
+  })
 });
+
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
