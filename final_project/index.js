@@ -12,6 +12,20 @@ app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUni
 
 app.use("/customer/auth/*", function auth(req,res,next){
 //Write the authenication mechanism here
+const token = req.session.token; // Retrieve token from session
+
+    if (!token) {
+        return res.status(403).json({ message: "Access Denied. No token provided." });
+    }
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: "Invalid token." });
+        }
+        req.user = decoded; // Attach user info to request
+        next();
+
+});
 });
  
 const PORT =5000;
@@ -19,4 +33,5 @@ const PORT =5000;
 app.use("/customer", customer_routes);
 app.use("/", genl_routes);
 
+app.listen(PORT,()=>console.log("Server is running"));
 app.listen(PORT,()=>console.log("Server is running"));
