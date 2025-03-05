@@ -60,29 +60,25 @@ regd_users.post("/login", (req,res) => {
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
-    console.log("Authorization Header:", authHeader); // Debugging Log
+    console.log("Authorization Header:", authHeader);
 
     if (!authHeader) {
         return res.status(403).json({ message: "User not logged in - No Authorization Header" });
     }
 
-    const token = authHeader.split(" ")[1]; // Extract token after "Bearer"
-    console.log("Extracted Token:", token); // Debugging Log
+    const token = authHeader.split(" ")[1];
+    console.log("Extracted Token:", token);
 
-    if (!token) {
-        return res.status(403).json({ message: "User not logged in - No Token Found" });
-    }
-
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token, "access", (err, decoded) => {
         if (err) {
-            console.log("Token Verification Failed:", err.message); // Debugging Log
+            console.log("Token Verification Failed:", err.message);
             return res.status(403).json({ message: "Invalid token" });
         }
-        req.username = decoded.username; // Store username in request object
-        console.log("Decoded Token Username:", decoded.username); // Debugging Log
+        req.username = decoded.username;
         next();
     });
 };
+
 
 
 
@@ -113,6 +109,31 @@ regd_users.put("/auth/review/:isbn", verifyToken, (req, res) => {
         reviews: books[isbn].reviews 
     });
 });
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", verifyToken, (req, res) => {
+    const isbn = req.params.isbn;
+    const username = req.username; // Extracted from JWT token
+
+    // Check if the book exists
+    if (!books[isbn]) {
+        return res.status(404).json({ message: "Book not found." });
+    }
+
+    // Check if reviews exist for the book
+    if (!books[isbn].reviews || !books[isbn].reviews[username]) {
+        return res.status(404).json({ message: "No review found for this user." });
+    }
+
+    // Delete the review
+    delete books[isbn].reviews[username];
+
+    return res.status(200).json({ 
+        message: "Review deleted successfully!", 
+        reviews: books[isbn].reviews // Return remaining reviews
+    });
+});
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;

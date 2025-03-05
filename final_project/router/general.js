@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -20,47 +21,74 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-    res.send(JSON.stringify(books,null,4));
-    return res.status(300).json({message: "Yet to be implemented"});
+    try {
+        res.status(200).json(books);  // Directly returning the books object
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching book list", error: error.message });
+    }
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn',async function (req, res) {
     const isbn = req.params.isbn;
-    res.send(books[isbn]);
-    return res.status(300).json({message: "Yet to be implemented"});
+
+    try {
+        const response = await axios.get(`https://kumarshubh26-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books`);
+        const books = response.data;
+
+        if (books[isbn]) {
+            res.status(200).json(books[isbn]);
+        } else {
+            res.status(404).json({ message: "Book not found." });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching book details", error: error.message });
+    }
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-
+public_users.get('/author/:author',async function (req, res) {
     const author = req.params.author.toLowerCase();
 
-    const bookKeys = Object.keys(books);
+    try {
+        console.log("Fetching books from API...");
+        const response = await axios.get("https://kumarshubh26-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books");
+        const books = response.data;
 
-    const booksByAuthor = bookKeys
-        .map(isbn => books[isbn])
-        .filter(book => book.author.toLowerCase() === author);
+        // Filter books by author
+        const booksByAuthor = Object.values(books).filter(book => book.author.toLowerCase() === author);
 
-
-    if (booksByAuthor.length > 0) {
-        return res.json(booksByAuthor);
-    } else {
-        return res.status(300).json({message: "Yet to be implemented"});    }
-    
+        if (booksByAuthor.length > 0) {
+            return res.status(200).json(booksByAuthor);
+        } else {
+            return res.status(404).json({ message: "No books found for this author." });
+        }
+    } catch (error) {
+        console.error("Error fetching books:", error.message);
+        return res.status(500).json({ message: "Error fetching books", error: error.message });
+    }
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async function (req, res) {
     const title = req.params.title.toLowerCase();
-    const bookKeys = Object.keys(books);
-    const booksByTitle = bookKeys
-        .map(isbn => books[isbn])
-        .filter(book => book.title.toLowerCase() === title);
-    if (booksByTitle.length > 0) {
-        return res.json(booksByTitle);
-    } else {
-        return res.status(300).json({message: "Yet to be implemented"});
+
+    try {
+        console.log("Fetching books from API...");
+        const response = await axios.get("https://kumarshubh26-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books");
+        const books = response.data;
+
+        // Filter books by title
+        const booksByTitle = Object.values(books).filter(book => book.title.toLowerCase() === title);
+
+        if (booksByTitle.length > 0) {
+            return res.status(200).json(booksByTitle);
+        } else {
+            return res.status(404).json({ message: "No books found with this title." });
+        }
+    } catch (error) {
+        console.error("Error fetching books:", error.message);
+        return res.status(500).json({ message: "Error fetching books", error: error.message });
     }
 });
 
