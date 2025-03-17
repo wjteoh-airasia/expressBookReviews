@@ -1,13 +1,15 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-const session = require("express-session");
-const customer_routes = require("./router/auth_users.js").authenticated;
-const general_routes = require("./router/general.js").general;
+import express from "express";
+import jwt from "jsonwebtoken";
+import session from "express-session";
+import { authenticated as customer_routes } from "./router/auth_users.js";
+import { general as general_routes } from "./router/general.js";
+
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
+
 app.use(
   "/customer",
   session({

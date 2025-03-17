@@ -1,20 +1,17 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-let books = require("./booksdb.js");
-const regd_users = express.Router();
+import express from "express";
+import jwt from "jsonwebtoken";
+import books from "./booksdb.js";
 require("dotenv").config();
+const regd_users = express.Router();
 
-let users = [];
+export let users = [];
 
-console.log(users);
-
-const isValid = (username) => {
+export const isValid = (username) => {
   const valid_user = users.filter((user) => user.username === username);
 
   if (valid_user.length > 0) {
     return true;
   }
-
   return false;
 };
 
@@ -30,6 +27,7 @@ const authenticatedUser = (username, password) => {
 };
 
 //only registered users can login
+
 regd_users.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -79,6 +77,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   });
 });
 
+//delete a book review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   const isbnID = req.params.isbn;
   const username = req.session.username;
@@ -103,6 +102,4 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   });
 });
 
-module.exports.authenticated = regd_users;
-module.exports.isValid = isValid;
-module.exports.users = users;
+export const authenticated = regd_users;

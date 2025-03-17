@@ -1,9 +1,6 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const axios = require("axios");
-let books = require("./booksdb.js");
-let isValid = require("./auth_users.js").isValid;
-let users = require("./auth_users.js").users;
+import express from "express";
+import axios from "axios";
+import { isValid, users } from "./auth_users.js";
 
 const public_users = express.Router();
 
@@ -123,4 +120,5 @@ public_users.get("/review/:isbn", function (req, res) {
     return res.status(404).json({ message: "Book not found" });
   }
 });
-module.exports.general = public_users;
+
+export const general = public_users;
