@@ -29,13 +29,16 @@ public_users.get('/',function (req, res) {
       return Promise.resolve(books);
     }
   }).then((response) => {
-    return res.status(200).json(response.data || response);
+    let books = response.data || response;
+    delete books.headers;
+    return res.status(200).json(books);
   }).catch((err) => {
     return res.status(500).json({ 
       message: "Error fetching books" ,
       error: err.message,
     });
   });
+
 });
 
 // Get book details based on ISBN
@@ -47,7 +50,9 @@ public_users.get('/isbn/:isbn',function (req, res) {
       return Promise.resolve(books[isbn]);
     }
 }).then((response) => {
-  return res.status(200).json(response.data || response);
+  let data = response.data || response;
+  delete data.headers;
+  return res.status(200).json(data);
 }).catch((err) => {
   return res.status(500).json({ 
     message: "Error fetching book details" ,
@@ -59,7 +64,6 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
-
   axios({
     method: 'GET',
     adapter: () => {
@@ -72,7 +76,9 @@ public_users.get('/author/:author',function (req, res) {
       return Promise.resolve(bookList);
     }
   }).then((response) => {
-    return res.status(200).json(response.data || response);
+    let data = response.data || response;
+    delete data.headers;
+    return res.status(200).json(data);
   }).catch((err) => {
     return res.status(500).json({ 
       message: "Error fetching books by author" ,
@@ -97,7 +103,9 @@ public_users.get('/title/:title',function (req, res) {
       return Promise.resolve(bookList);
     }
   }).then((response) => {
-    return res.status(200).json(response.data || response);
+    let data = response.data || response;
+    delete data.headers;
+    return res.status(200).json(data);
   }).catch((err) => {
     return res.status(500).json({ 
       message: "Error fetching books by title" ,
@@ -116,7 +124,9 @@ public_users.get('/review/:isbn',function (req, res) {
       return Promise.resolve(books[isbn].reviews);
     }
   }).then((response) => {
-    return res.status(200).json(response.data || response);
+    let data = response.data || response;
+    delete data.headers;
+    return res.status(200).json(data);
   }).catch((err) => {
     return res.status(500).json({ 
       message: "Error fetching reviews for book " + isbn,
