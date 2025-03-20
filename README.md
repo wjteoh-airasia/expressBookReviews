@@ -1,3 +1,3 @@
-- this is a basic crud application with authentication using both sessions and JWT 
+- This is a basic CRUD application with authentication using both sessions and JWT.
 
-- i used node/ express for this application
+- I used Node/Express for this application
