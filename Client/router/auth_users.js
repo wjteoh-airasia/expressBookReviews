@@ -1,32 +1,33 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import books from "./booksdb.js";
-require("dotenv").config();
+import books from "../cofing/db.js";
+import "dotenv/config";
+import user_info from "../model/user.js";
 const regd_users = express.Router();
 
 export let users = [];
 
-export const isValid = (username) => {
-  const valid_user = users.filter((user) => user.username === username);
+// export async function isValid(username) {
+//   const valid_user = users.filter((user) => user.username === username);
 
-  if (valid_user.length > 0) {
-    return true;
-  }
-  return false;
-};
+//   if (valid_user.length > 0) {
+//     return true;
+//   }
+//   return false;
+// }
 
-const authenticatedUser = (username, password) => {
-  const valid_user = users.filter(
-    (user) => user.username === username && user.password === password
-  );
+// export async function authenticatedUser(username, password) {
+//   const valid_user = users.filter(
+//     (user) => user.username === username && user.password === password
+//   );
 
-  if (valid_user.length > 0) {
-    return true;
-  }
-  return false;
-};
+//   if (valid_user.length > 0) {
+//     return true;
+//   }
+//   return false;
+// }
 
-//only registered users can login
+// only registered users can login
 
 regd_users.post("/login", (req, res) => {
   const { username, password } = req.body;

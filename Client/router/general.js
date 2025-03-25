@@ -1,37 +1,56 @@
 import express from "express";
 import axios from "axios";
-import { isValid, users } from "./auth_users.js";
+import jwt from "jsonwebtoken";
+import users from "../model/user.js";
+import all_books from "../model/books.js";
+import { authenticated } from "./auth_users.js";
 
 const public_users = express.Router();
 
-public_users.post("/register", (req, res) => {
-  const { username, password } = req.body;
+public_users.post("/register", async function (req, res) {
+  const { username, password, email, number } = req.body;
 
-  if (username && password) {
-    if (!isValid(username)) {
-      users.push({ username: username, password: password });
+  if (username && password && email && number) {
+    const find_user = await users.findOne({
+      where: {
+        email: email,
+      },
+    });
 
-      return res
-        .status(200)
-        .send(`the user ${username} has succesfully registered ! `);
-    } else {
-      return res.status(404).send("user already exists!");
+    if (find_user === null) {
+      const access_Token = jwt.sign(
+        { name: username },
+        process.env.JWT_SECRET_KEY
+      );
+
+      await users.create({
+        full_name: username,
+        password: password,
+        email: email,
+        number: number,
+      });
+
+      return res.status(200).json({
+        data: req.body,
+        token: access_Token,
+      });
     }
+
+    return res.status(404).json("there is already an account by this email");
+  } else {
+    return res.status(404).send("type all the infos !");
   }
-
-  return res
-    .status(404)
-    .json({ message: "an error has occured with the credintials" });
 });
-
-// Get the book list available in the shop
 
 public_users.get("/", async function (req, res) {
   try {
-    const response = await axios.get(process.env.URL + "\books");
-    return res.status(200).send(JSON.stringify(response.data));
+    const userss = await users.findAll();
+    return res.status(200).json(userss);
   } catch (error) {
-    return res.status(404).json({ message: "there was an error" });
+    console.error("Error fetching books:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while fetching books" });
   }
 });
 
