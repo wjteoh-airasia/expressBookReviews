@@ -2,57 +2,53 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import books from "../cofing/db.js";
 import "dotenv/config";
-import user_info from "../model/user.js";
+import users from "../model/user.js";
 const regd_users = express.Router();
-
-export let users = [];
-
-// export async function isValid(username) {
-//   const valid_user = users.filter((user) => user.username === username);
-
-//   if (valid_user.length > 0) {
-//     return true;
-//   }
-//   return false;
-// }
-
-// export async function authenticatedUser(username, password) {
-//   const valid_user = users.filter(
-//     (user) => user.username === username && user.password === password
-//   );
-
-//   if (valid_user.length > 0) {
-//     return true;
-//   }
-//   return false;
-// }
 
 // only registered users can login
 
-regd_users.post("/login", (req, res) => {
-  const { username, password } = req.body;
+regd_users.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  if (username && password) {
-    if (authenticatedUser(username, password)) {
-      let accessToken = jwt.sign(
-        { data: username },
-        process.env.JWT_SECRET_KEY,
-        {
-          expiresIn: 3600,
-        }
-      );
+    if (username && password) {
+      const existed_user = await users.findOne({
+        where: {
+          full_name: username,
+        },
+      });
 
-      req.session.authorization = {
-        accessToken,
-        username,
-      };
+      if (!existed_user)
+        return res
+          .status(404)
+          .json({ message: "cridentials are incorrect ! plese try again." });
 
-      return res.status(200).json({ message: "Logged in succesfully !" });
+      if (existed_user.password === password) {
+        let accessToken = jwt.sign(
+          { data: username },
+          process.env.JWT_SECRET_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        return res
+          .cookie("token", accessToken, {
+            httpOnly: true,
+          })
+          .status(200)
+          .json({
+            message: "Login successful",
+            username: existed_user.full_name,
+          });
+      }
     } else {
-      return res.status(404).send({ message: "user is not authenticated" });
+      return res
+        .status(404)
+        .json({ message: "please enter your username and password" });
     }
-  } else {
-    return res.status(404).json({ message: "an error has occured" });
+  } catch (err) {
+    console.log(err);
   }
 });
 
@@ -103,4 +99,4 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   });
 });
 
-export const authenticated = regd_users;
+export const auth_users = regd_users;

@@ -27,7 +27,7 @@ const all_books = sequelize.define(
 
 async function syncModel() {
   try {
-    await all_books.sync({ force: true });
+    await all_books.sync({ alter: true });
 
     console.log("Books table synced successfully");
   } catch (error) {

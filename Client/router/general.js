@@ -1,9 +1,9 @@
 import express from "express";
 import axios from "axios";
-import jwt from "jsonwebtoken";
 import users from "../model/user.js";
 import all_books from "../model/books.js";
-import { authenticated } from "./auth_users.js";
+import jwt from "jsonwebtoken";
+import { auth_users } from "./auth_users.js";
 
 const public_users = express.Router();
 
@@ -18,11 +18,6 @@ public_users.post("/register", async function (req, res) {
     });
 
     if (find_user === null) {
-      const access_Token = jwt.sign(
-        { name: username },
-        process.env.JWT_SECRET_KEY
-      );
-
       await users.create({
         full_name: username,
         password: password,
@@ -32,7 +27,6 @@ public_users.post("/register", async function (req, res) {
 
       return res.status(200).json({
         data: req.body,
-        token: access_Token,
       });
     }
 
@@ -42,91 +36,81 @@ public_users.post("/register", async function (req, res) {
   }
 });
 
+// this function gives you all the books
+
 public_users.get("/", async function (req, res) {
   try {
-    const userss = await users.findAll();
-    return res.status(200).json(userss);
+    const books = await all_books.findAll();
+    return res.status(200).send(books);
   } catch (error) {
-    console.error("Error fetching books:", error);
     return res
       .status(500)
       .json({ message: "An error occurred while fetching books" });
   }
 });
 
-// Get book details based on ISBN
+// Get book details based on ISBN_ID
 
-public_users.get("/isbn/:isbn", function (req, res) {
+public_users.get("/isbn/:isbn", async function (req, res) {
   const isbnID = req.params.isbn;
+  try {
+    const find_book = await all_books.findOne({
+      where: {
+        book_id: isbnID,
+      },
+    });
 
-  new Promise((resolve, reject) => {
-    if (books[isbnID]) {
-      resolve(books[isbnID]);
-    } else {
-      reject({ message: "There is no book for this code" });
-    }
-  })
-    .then((book) => res.status(200).json(book))
-    .catch((error) => res.status(404).json(error));
+    if (!find_book) throw new Error("there is no book by this id");
+
+    return res.status(200).send(find_book);
+  } catch (err) {
+    return res.status(404).json({ message: err.message });
+  }
 });
 
 // Get book details based on author
 
 public_users.get("/author/:author", async (req, res) => {
   try {
-    const author = req.params.author.toLowerCase();
-    const bookByAuthor = {};
-    const response = await axios.get(process.env.URL + "/books");
-    const books = response.data;
+    const { author } = req.params;
 
-    for (const [ID, bookObj] of Object.entries(books)) {
-      let book_author = bookObj.author.toLowerCase();
-      let first_name_book_author = bookObj.author
-        .split(" ")
-        .at(0)
-        .toLowerCase();
+    try {
+      const find_book = await all_books.findOne({
+        where: {
+          author: author,
+        },
+      });
 
-      if (book_author === author || first_name_book_author === author) {
-        bookByAuthor[ID] = bookObj;
-      }
+      if (!find_book)
+        throw new Error("there is no book written by this author !");
+
+      return res.status(200).send(find_book);
+    } catch (err) {
+      return res.status(404).json({ message: err.message });
     }
-
-    if (Object.keys(bookByAuthor).length > 0) {
-      return res.status(200).json(bookByAuthor);
-    }
-
-    return res
-      .status(404)
-      .json({ message: "there is no book for this author" });
   } catch (error) {
     console.error("Error fetching books:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 });
 
+// Get book details based on title
+
 public_users.get("/title/:title", async (req, res) => {
   try {
-    const title = req.params.title;
-    const bookByTitle = {};
-    const response = await axios.get(process.env.URL + "/books");
-    const books = response.data;
+    const { title } = req.params;
 
-    for (const [ID, bookObj] of Object.entries(books)) {
-      if (bookObj.title.toLowerCase() === title.toLowerCase()) {
-        bookByTitle[ID] = bookObj;
-      }
-    }
+    const find_book = await all_books.findOne({
+      where: {
+        title: title,
+      },
+    });
 
-    if (Object.keys(bookByTitle).length === 0) {
-      return res
-        .status(404)
-        .json({ message: "there are no books by this title" });
-    }
+    if (!find_book) throw new Error("there is no book by this title !");
 
-    return res.status(200).json(bookByTitle);
-  } catch (error) {
-    console.error("Error fetching books:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(200).send(find_book);
+  } catch (err) {
+    return res.status(404).json({ message: err.message });
   }
 });
 
@@ -140,4 +124,4 @@ public_users.get("/review/:isbn", function (req, res) {
   }
 });
 
-export const general = public_users;
+export const general_routes = public_users;

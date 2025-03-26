@@ -1,5 +1,5 @@
 import sequelize from "../cofing/db.js";
-import { Sequelize, DataTypes } from "sequelize";
+import { DataTypes } from "sequelize";
 
 const users = sequelize.define(
   "users",
