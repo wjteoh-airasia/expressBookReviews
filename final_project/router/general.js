@@ -21,20 +21,21 @@ public_users.post("/register", (req,res) => {
   }
 });
 
+async function getBooks() {
+  try {
+    return await Promise.resolve(books);
+  } catch (err) {
+    console.error('Error getting products: ',err);
+    throw err;
+  }
+}
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  let response = new Promise((resolve, reject) => {
-    resolve(books);
-  })
-
-  response.then(bookList => {
+  (async () => {
+    const bookList = await getBooks();
     return res.status(200).json(bookList);
-  }).catch((err) => {
-    return res.status(500).json({ 
-      message: "Error fetching books" ,
-      error: err.message,
-    });
-  });
+  })();
 });
 
 // Get book details based on ISBN
