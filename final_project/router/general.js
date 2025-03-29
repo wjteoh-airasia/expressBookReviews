@@ -119,24 +119,6 @@ public_users.get('/review/:isbn',function (req, res) {
   }).catch((err) => {
     return res.status(404).json({ message: "Book not found" });
   })
-
-  // const isbn = req.params.isbn;
-
-  // axios({
-  //   method: 'GET',
-  //   adapter: () => {
-  //     return Promise.resolve(books[isbn].reviews);
-  //   }
-  // }).then((response) => {
-  //   let data = response.data || response;
-  //   delete data.headers;
-  //   return res.status(200).json(data);
-  // }).catch((err) => {
-  //   return res.status(500).json({ 
-  //     message: "Error fetching reviews for book " + isbn,
-  //     error: err.message,
-  //   });
-  // })
 });
 
 module.exports.general = public_users;
