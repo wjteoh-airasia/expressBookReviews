@@ -23,116 +23,119 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  axios({
-    method: 'GET',
-    adapter: () => {
-      return Promise.resolve(books);
-    }
-  }).then((response) => {
-    let books = response.data || response;
-    delete books.headers;
-    return res.status(200).json(books);
+  let response = new Promise((resolve, reject) => {
+    resolve(books);
+  })
+
+  response.then(bookList => {
+    return res.status(200).json(bookList);
   }).catch((err) => {
     return res.status(500).json({ 
       message: "Error fetching books" ,
       error: err.message,
     });
   });
-
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  const isbn = req.params.isbn;
-  axios({
-    method: 'GET',
-    adapter: () => {
-      return Promise.resolve(books[isbn]);
+  let response = new Promise((resolve, reject) => {
+    const isbn = req.params.isbn;
+    const book = books[isbn];
+    if (!book) {
+      reject("Book not found");
     }
-}).then((response) => {
-  let data = response.data || response;
-  delete data.headers;
-  return res.status(200).json(data);
-}).catch((err) => {
-  return res.status(500).json({ 
-    message: "Error fetching book details" ,
-    error: err.message,
+    resolve(book);
   });
+
+  response.then((response) => {
+    return res.status(200).json(response);
+  }).catch (err => {
+    return res.status(404).json({ message: "Book not found" });
+  })
 });
- });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
-  axios({
-    method: 'GET',
-    adapter: () => {
-      const bookList = [];
-      for (const key of Object.keys(books)) {
-        if (books[key].author === author) {
-          bookList.push(books[key]);
-        }
+  let response = new Promise((resolve, reject) => {
+    const author = req.params.author;
+    const bookList = Object.keys(books).map(key => {
+      return {
+        isbn: key,
+      ...books[key]
       }
-      return Promise.resolve(bookList);
-    }
-  }).then((response) => {
-    let data = response.data || response;
-    delete data.headers;
+    })
+    const books2res = bookList.filter(book => book.author === author)
+    resolve(books2res);
+  });
+
+  response.then(data => {
     return res.status(200).json(data);
   }).catch((err) => {
     return res.status(500).json({ 
       message: "Error fetching books by author" ,
       error: err.message,
     });
-  })
+  });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  const title = req.params.title;
-
-  axios({
-    method: 'GET',
-    adapter: () => {
-      const bookList = [];
-      for (const key of Object.keys(books)) {
-        if (books[key].title === title) {
-          bookList.push(books[key]);
-        }
+  let response = new Promise((resolve, reject) => {
+    const title = req.params.title;
+    const bookList = Object.keys(books).map(key => {
+      return {
+        isbn: key,
+      ...books[key]
       }
-      return Promise.resolve(bookList);
-    }
-  }).then((response) => {
-    let data = response.data || response;
-    delete data.headers;
+    })
+    const books2res = bookList.filter(book => book.title === title)
+    resolve(books2res);
+  });
+
+  response.then(data => {
     return res.status(200).json(data);
-  }).catch((err) => {
+  }).catch(err => {
     return res.status(500).json({ 
       message: "Error fetching books by title" ,
       error: err.message,
     });
-  })
+  });
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  const isbn = req.params.isbn;
-
-  axios({
-    method: 'GET',
-    adapter: () => {
-      return Promise.resolve(books[isbn].reviews);
+  let response = new Promise((resolve, reject) => {
+    const isbn = req.params.isbn;
+    const book = books[isbn];
+    if (!book) {
+      reject("Book not found");
     }
-  }).then((response) => {
-    let data = response.data || response;
-    delete data.headers;
-    return res.status(200).json(data);
-  }).catch((err) => {
-    return res.status(500).json({ 
-      message: "Error fetching reviews for book " + isbn,
-      error: err.message,
-    });
+    resolve(book.reviews);
   })
+  response.then((response) => {
+    return res.status(200).json(response);
+  }).catch((err) => {
+    return res.status(404).json({ message: "Book not found" });
+  })
+
+  // const isbn = req.params.isbn;
+
+  // axios({
+  //   method: 'GET',
+  //   adapter: () => {
+  //     return Promise.resolve(books[isbn].reviews);
+  //   }
+  // }).then((response) => {
+  //   let data = response.data || response;
+  //   delete data.headers;
+  //   return res.status(200).json(data);
+  // }).catch((err) => {
+  //   return res.status(500).json({ 
+  //     message: "Error fetching reviews for book " + isbn,
+  //     error: err.message,
+  //   });
+  // })
 });
 
 module.exports.general = public_users;
