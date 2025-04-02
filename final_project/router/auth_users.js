@@ -1,28 +1,57 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+const express = require("express");
+const jwt = require("jsonwebtoken");
 let books = require("./booksdb.js");
+const { secretKey } = require("../config/config");
 const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
-}
+const isValid = (username) => {
+  //returns boolean
+  //write code to check is the username is valid
+  return username.length && !users.some((u) => u.username === username);
+};
 
-const authenticatedUser = (username,password)=>{ //returns boolean
-//write code to check if username and password match the one we have in records.
-}
+const authenticatedUser = (username, password) => {
+  //returns boolean
+  //write code to check if username and password match the one we have in records.
+  return users.some(
+    (user) => user.username === username && user.password === user.password,
+  );
+};
 
 //only registered users can login
-regd_users.post("/login", (req,res) => {
+regd_users.post("/login", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const { username, password } = req.body;
+  if (authenticatedUser(username, password)) {
+    const token = jwt.sign({ username }, secretKey, { expiresIn: "1h" });
+    req.session.token = token;
+    res.json({ token: token });
+  } else {
+    res.send("Invalid credentials");
+  }
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const { review } = req.body;
+  const { isbn } = req.params;
+  const book = books[isbn];
+  //
+  // if (!book) {
+  //   return res.status(400).json({message: "Book is not found"});
+  // }
+  // const user = req.session.user;
+  //
+  // if (!user) {
+  //   return res.status(403).json({message: "User is not found"});
+  // }
+
+  book.reviews[user] = review;
+
+  return res.status(200).json({message: "Review posted", updatedBook: book});
 });
 
 module.exports.authenticated = regd_users;
