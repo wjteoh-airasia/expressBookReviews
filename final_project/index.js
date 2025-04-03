@@ -12,6 +12,28 @@ app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUni
 
 app.use("/customer/auth/*", function auth(req,res,next){
 //Write the authenication mechanism here
+// セッションが存在するかチェック
+if (!req.session || !req.session.authorization) {
+    return res.status(401).json({ message: "Unauthorized. Please login first" });
+  }
+  
+  try {
+    // JWTトークンを検証
+    const token = req.session.authorization.accessToken;
+    
+    // トークンを検証（'access'はJWTの署名に使用した秘密鍵）
+    jwt.verify(token, 'access', (err, decoded) => {
+      if (err) {
+        // トークンが無効または期限切れの場合
+        return res.status(401).json({ message: "Invalid token. Please login again" });
+      }
+      
+      // トークンが有効な場合、次のミドルウェアに進む
+      next();
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error during authentication" });
+  }
 });
  
 const PORT =5000;
