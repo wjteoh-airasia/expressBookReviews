@@ -35,83 +35,138 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  //Write your code here
-   res.send(JSON.stringify(books,null,4));
-  //return res.status(300).json({message: "Yet to be implemented"});
+public_users.get('/', function (req, res) {
+  // create promise for getting books
+  const getBooksPromise = new Promise((resolve, reject) => {
+
+    setTimeout(() => {
+      if (books && Object.keys(books).length > 0) {
+        resolve(books);
+      } else {
+        reject("Books data not available");
+      }
+    }, 100);
+  });
+
+  // Process results using promises
+  getBooksPromise
+    .then((booksData) => {
+      res.status(200).json(booksData);
+    })
+    .catch((error) => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  const isbn = req.params.isbn;
-  res.send(books[isbn]);
-  //return res.status(300).json({message: "Yet to be implemented"});
- });
+public_users.get('/isbn/:isbn', function (req, res) {
+    const isbn = req.params.isbn;
+    
+    //  create promise for getting books with ISBN
+    const getBookByISBNPromise = new Promise((resolve, reject) => {
+      // Simulate Async
+      setTimeout(() => {
+        if (books[isbn]) {
+          resolve(books[isbn]);
+        } else {
+          reject("Book not found with the given ISBN");
+        }
+      }, 100);
+    });
+    
+    // Process results using promises
+    getBookByISBNPromise
+      .then((book) => {
+        res.status(200).json(book);
+      })
+      .catch((error) => {
+        res.status(404).json({ message: error });
+      });
+});
   
-// Get book details based on author
+// Get book details based on author using Promise
 public_users.get('/author/:author', function (req, res) {
-    // リクエストパラメータから著者名を取得
     const requestedAuthor = req.params.author;
     
-    // 結果を格納する配列
-    const authorBooks = [];
-    
-    // booksオブジェクトのすべてのキー（ISBN）を取得
-    const bookIds = Object.keys(books);
-    
-    // 各本をチェックし、著者が一致するものを結果配列に追加
-    bookIds.forEach(id => {
-      if (books[id].author.toLowerCase() === requestedAuthor.toLowerCase()) {
-        // 著者が一致した場合、その本の情報を結果に追加
-        authorBooks.push({
-          isbn: id,
-          title: books[id].title,
-          author: books[id].author,
-          reviews: books[id].reviews
+    //  create promise for getting books with author
+    const getBooksByAuthorPromise = new Promise((resolve, reject) => {
+      // Simulate Async
+      setTimeout(() => {
+        const bookIds = Object.keys(books);
+        const authorBooks = [];
+        
+        // Check each book and add matching authors to the results array
+        bookIds.forEach(id => {
+          if (books[id] && books[id].author && 
+              books[id].author.toLowerCase() === requestedAuthor.toLowerCase()) {
+            authorBooks.push({
+              isbn: id,
+              title: books[id].title,
+              author: books[id].author,
+              reviews: books[id].reviews
+            });
+          }
         });
-      }
+        
+        if (authorBooks.length > 0) {
+          resolve(authorBooks);
+        } else {
+          reject("No books found for this author");
+        }
+      }, 100);
     });
     
-    // 結果が見つかったかチェック
-    if (authorBooks.length > 0) {
-      res.status(200).json(authorBooks);
-    } else {
-      res.status(404).json({ message: "No books found for this author" });
-    }
-  });
+    // Process results using promises
+    getBooksByAuthorPromise
+      .then((books) => {
+        res.status(200).json(books);
+      })
+      .catch((error) => {
+        res.status(404).json({ message: error });
+      });
+});
 
-// Get all books based on title
+// Get all books based on title using Promise
 public_users.get('/title/:title', function (req, res) {
-    // リクエストパラメータからタイトルを取得
     const requestedTitle = req.params.title.toLowerCase();
     
-    // 結果を格納する配列
-    const matchingBooks = [];
-    
-    // booksオブジェクトのすべてのキー（ISBN）を取得
-    const bookIds = Object.keys(books);
-    
-    // 各本をチェックし、タイトルに検索語が含まれるものを結果配列に追加
-    bookIds.forEach(id => {
-      if (books[id].title.toLowerCase().includes(requestedTitle)) {
-        // タイトルが部分一致した場合、その本の情報を結果に追加
-        matchingBooks.push({
-          isbn: id,
-          title: books[id].title,
-          author: books[id].author,
-          reviews: books[id].reviews
+    // Create a promise to search for books by title
+    const getBooksByTitlePromise = new Promise((resolve, reject) => {
+      // Simulate Async
+      setTimeout(() => {
+        const bookIds = Object.keys(books);
+        const matchingBooks = [];
+        
+        // Check each book and add the ones whose title contains the search term to the results array
+        bookIds.forEach(id => {
+          if (books[id] && books[id].title && 
+              books[id].title.toLowerCase().includes(requestedTitle)) {
+            matchingBooks.push({
+              isbn: id,
+              title: books[id].title,
+              author: books[id].author,
+              reviews: books[id].reviews
+            });
+          }
         });
-      }
+        
+        if (matchingBooks.length > 0) {
+          resolve(matchingBooks);
+        } else {
+          reject("No books found with this title");
+        }
+      }, 100);
     });
     
-    // 結果が見つかったかチェック
-    if (matchingBooks.length > 0) {
-      res.status(200).json(matchingBooks);
-    } else {
-      res.status(404).json({ message: "No books found with this title" });
-    }
-  });
+    // Process results using promises
+    getBooksByTitlePromise
+      .then((books) => {
+        res.status(200).json(books);
+      })
+      .catch((error) => {
+        res.status(404).json({ message: error });
+      });
+});
 
 //  Get book review
 public_users.get('/review/:isbn', function (req, res) {
