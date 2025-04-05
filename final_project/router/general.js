@@ -34,7 +34,7 @@ public_users.get('/books', (req, res) => {
 // Get the book list available in the shop
 public_users.get('/',async function (req, res) {
     try {
-        const books = await axios.get('https://rohitk151020-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books');
+        const books = await axios.get('https://localhost:5000/books');
         res.status(200).json(books.data);
     } catch (error) {
         res.status(500).json({ message: "Error fetching books", error: error.message });
@@ -54,7 +54,7 @@ public_users.get('/books/isbn/:isbn',function (req, res) {
 public_users.get('/isbn/:isbn',async function (req, res) {
     try {
         const isbn = req.params.isbn;
-        const books = await axios.get(`https://rohitk151020-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books/isbn/${isbn}`);
+        const books = await axios.get(`https://localhost:5000/books/isbn/${isbn}`);
         res.status(200).json(books.data);
     } catch (error) {
         res.status(500).json({ message: "Error fetching isbn", error: error.message });
@@ -75,7 +75,7 @@ public_users.get('/books/author/:author',function (req, res) {
 public_users.get('/author/:author',async function (req, res) {
     try {
         const author = req.params.author;
-        const books = await axios.get(`https://rohitk151020-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books/author/${author}`);
+        const books = await axios.get(`https://localhost:5000/books/author/${author}`);
         res.status(200).json(books.data);
     } catch (error) {
         res.status(500).json({ message: "Error fetching author", error: error.message });
@@ -85,13 +85,23 @@ public_users.get('/author/:author',async function (req, res) {
 
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/books/title/:title',function (req, res) {
     let title = req.params.title;
     let details = Object.values(books).filter((book)=> book.title===title);
     if(details.length>0){
         res.status(200).json(details);
     }else{
         res.status(404).json({message:"title not found"});
+    }
+});
+
+public_users.get('/title/:title',async function (req, res) {
+    try {
+        const title = req.params.title;
+        const books = await axios.get(`https://localhost:5000/books/title/${title}`);
+        res.status(200).json(books.data);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching title", error: error.message });
     }
 });
 
