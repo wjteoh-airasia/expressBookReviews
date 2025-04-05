@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios');
 
 
 public_users.post("/register", (req,res) => {
@@ -26,9 +27,18 @@ public_users.post("/register", (req,res) => {
     }
 });
 
+public_users.get('/books', (req, res) => {
+    res.status(200).json(books);
+});
+
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-    res.status(200).send(JSON.stringify(books));
+public_users.get('/',async function (req, res) {
+    try {
+        const books = await axios.get('https://rohitk151020-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/books');
+        res.status(200).json(books.data);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching books", error: error.message });
+    }
 });
 
 // Get book details based on ISBN
