@@ -48,7 +48,28 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
             books[isbn].reviews[userName]=review;
             return res.status(200).send("Review added/updated successfully")
         }else{
-            return res.statue(404).json({error: "book not found"})
+            return res.status(404).json({error: "book not found"})
+        }
+    }catch(err){
+        return res.status(403).json({ error: "Invalid or expired token" });        
+    }
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Authorization token missing or malformed" });
+    }
+    const token = authHeader.split(" ")[1];
+    try{
+        const decoded = jwt.verify(token, 'access');
+        const userName = decoded.userName;
+        if(books[isbn]){
+            delete books[isbn].reviews[userName];
+            return res.status(200).send("Review deleted successfully")
+        }else{
+            return res.status(404).json({error: "book not found"})
         }
     }catch(err){
         return res.status(403).json({ error: "Invalid or expired token" });        
