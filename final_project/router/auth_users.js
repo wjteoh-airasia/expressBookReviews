@@ -18,9 +18,9 @@ regd_users.post("/login", (req,res) => {
     const {userName, password} = req.body;
     const user = users.find(user => user.userName===userName && user.password===password);
     if(user){
-        const token = jwt.sign({
-            data: password
-            }, 'access',
+        const token = jwt.sign(
+            { userName: user.userName },
+            'access',
             {expiresIn: '1hr'}
         );
         res.status(200).json({token});
@@ -31,8 +31,28 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const isbn = req.params.isbn;
+    const review = req.query.review;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Authorization token missing or malformed" });
+    }
+    const token = authHeader.split(" ")[1];
+    if (!review) {
+        return res.status(400).json({ error: "Review query is required" });
+    }
+    try{
+        const decoded = jwt.verify(token, 'access');
+        const userName = decoded.userName;
+        if(books[isbn]){
+            books[isbn].reviews[userName]=review;
+            return res.status(200).send("Review added/updated successfully")
+        }else{
+            return res.statue(404).json({error: "book not found"})
+        }
+    }catch(err){
+        return res.status(403).json({ error: "Invalid or expired token" });        
+    }
 });
 
 module.exports.authenticated = regd_users;
