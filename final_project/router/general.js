@@ -4,10 +4,9 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-const credentials = [];
 
 const doesExist = (userName) => {
-    let usernames = credentials.filter(u => u.username === userName);
+    let usernames = users.filter(u => u.username === userName);
     if(usernames.length > 0) {
         return true;
     }
@@ -21,7 +20,7 @@ public_users.post("/register", (req,res) => {
   
   if(username && password) {
     if(!doesExist(username)) {
-        credentials.push({"username" : username, "password" : password});
+        users.push({"username" : username, "password" : password});
         return res.status(200).json({message: "User successfully registered. Please log in"});
     }
     else {
