@@ -70,14 +70,21 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 regd_users.delete("/auth/review/:isbn", (req,res) => {
     const isbnByUser = req.params.isbn;
     const username1 = req.session.authorization?.uname;
+    const book = books[isbnByUser];
 
     if(!username1) {
         return res.status(401).json({message : "User not logged in"})
     }
-    if(!books[isbnInput]) {
+    if(!book) {
         return res.status(404).json({message : "Book not found. Please check ISBN number"})
     }
-    books[isbnByUser].reviews[username1]
+    if(book.reviews && book.reviews[username1]) {
+        delete book.reviews[username1]
+        return res.status(200).json({message : "Review deleted successfully", book})
+    }
+    else {
+        return res.status(404).json({message : "No review found for this user to delete"})
+    }
 }) 
 
 
