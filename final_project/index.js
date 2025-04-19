@@ -14,15 +14,18 @@ app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUni
 app.use("/customer/auth/*", function auth(req,res,next){
 if (req.session.authorization){// Get the authorization object stored in the session
     token = req.session.authorization['accessToken']; // retrieve the token from authorization object
-    if (! err){
+    jwt.verify(token, "access", (err, user)=> {
+
+    if (!err) {
         req.user = user;
         next();
+        } else {
+        return res.status(403).json({ message: "User not authenticated" });
+        }
+    });
     } else {
-        return res.status(403).jason({message: "User not authenticated"});
+    return res.status(403).json({ message: "User not logged in" });
     }
-} else {
-    return res.status(403).jason({message: "User not logged in"});
-}
 });
  
 const PORT =5001;
