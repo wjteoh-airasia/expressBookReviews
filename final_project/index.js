@@ -15,6 +15,13 @@ const doesExist = (username) =>{
     });
     return userWithSameNAme.length>0;
 };
+// Function to check if the user is authenticated
+const authenticatedUser = (username, password)=>{
+    let validusers = users.filter((user)=>{
+        return user.username === username && user.password === password;
+    });
+    return validusers.length >0;
+};
 
 app.use(express.json());
 
