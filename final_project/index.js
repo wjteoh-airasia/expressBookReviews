@@ -6,22 +6,9 @@ const genl_routes = require('./router/general.js').general;
 
 const app = express();
 // Creating Users tray
-let users = [];
 
-// Function to check if the user exists
-const doesExist = (username) =>{
-    let userWithSameNAme = users.filter((user)=>{
-        return user.username === username;
-    });
-    return userWithSameNAme.length>0;
-};
-// Function to check if the user is authenticated
-const authenticatedUser = (username, password)=>{
-    let validusers = users.filter((user)=>{
-        return user.username === username && user.password === password;
-    });
-    return validusers.length >0;
-};
+
+
 
 app.use(express.json()); // Middleware to parse JSON request bodies
 
