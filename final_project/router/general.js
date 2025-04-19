@@ -44,11 +44,6 @@ public_users.get('/author/:author',function (req, res) {
   } 
 });
 
-
-
-
-
-
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   // Extract the title parameter from the request parameters
@@ -63,10 +58,28 @@ public_users.get('/title/:title',function (req, res) {
   } 
 });
 
+
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    // Extract the isbn parameter from the request parameters
+    const isbn = req.params.isbn;
+    // Find the book with the corresponding ISBN
+    const book = books[isbn];
+    // Check if the book exists
+    if (book){
+      //check if the book has reviews
+      if (Object.keys(book.reviews).length >0){
+        // Send the reviews as the response 
+        res.status(200).send(JSON.stringify(book.reviews, null, 4));
+      } else {
+        // If there is no reviews available
+        res.status(404).json({message: "no reviews found for this book"});
+      }
+
+    } else {
+      // if the book is not found
+      res.status(404).json({message: "Book not found"});
+    } 
 });
 
 module.exports.general = public_users;
