@@ -118,6 +118,7 @@ public_users.get('/isbn/:isbn', function (req, res) {
 
 
 // Get book details based on author
+/*
 public_users.get('/author/:author',function (req, res) {
   // Extract the Author parameter from the request parameters
   const author = req.params.author;
@@ -130,8 +131,32 @@ public_users.get('/author/:author',function (req, res) {
     res.status(404).json({message: "Book not found"});
   } 
 });
+*/
+// or rewrite the route using async/await and a Promise
+public_users.get('/author/:author', async function (req, res) {
+  const author = req.params.author.toLowerCase();
+
+  try {
+    const data = await new Promise((resolve, reject) => {
+      const filteredBooks = Object.values(books).filter(
+        book => book.author.toLowerCase() === author
+      );
+
+      if (filteredBooks.length > 0) {
+        resolve(filteredBooks);
+      } else {
+        reject(new Error("Book not found"));
+      }
+    });
+
+    res.status(200).send(JSON.stringify(data, null, 4));
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+});
 
 // Get all books based on title
+/*
 public_users.get('/title/:title',function (req, res) {
   // Extract the title parameter from the request parameters
   const title = req.params.title;
@@ -144,7 +169,30 @@ public_users.get('/title/:title',function (req, res) {
     res.status(404).json({message: "Book not found"});
   } 
 });
+*/
+// or rewritten using async/await with a Promise
+// Get all books based on title using async/await and Promise
+public_users.get('/title/:title', async function (req, res) {
+  const title = req.params.title.toLowerCase();
 
+  try {
+    const data = await new Promise((resolve, reject) => {
+      const filteredBooks = Object.values(books).filter(
+        book => book.title.toLowerCase() === title
+      );
+
+      if (filteredBooks.length > 0) {
+        resolve(filteredBooks);
+      } else {
+        reject(new Error("Book not found"));
+      }
+    });
+
+    res.status(200).send(JSON.stringify(data, null, 4));
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+});
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
