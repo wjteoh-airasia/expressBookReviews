@@ -5,6 +5,16 @@ const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
 
 const app = express();
+// Creating Users tray
+let users = [];
+
+// Function to check if the user exists
+const doesExist = (username) =>{
+    let userWithSameNAme = users.filter((user)=>{
+        return user.username === username;
+    });
+    return userWithSameNAme.length>0;
+};
 
 app.use(express.json());
 
@@ -14,7 +24,7 @@ app.use("/customer/auth/*", function auth(req,res,next){
 //Write the authenication mechanism here
 });
  
-const PORT =5000;
+const PORT =5001;
 
 app.use("/customer", customer_routes);
 app.use("/", genl_routes);
