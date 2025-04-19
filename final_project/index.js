@@ -6,10 +6,6 @@ const genl_routes = require('./router/general.js').general;
 
 const app = express();
 
-
-
-
-
 app.use(express.json()); // Middleware to parse JSON request bodies
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
