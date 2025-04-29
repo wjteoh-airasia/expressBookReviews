@@ -59,6 +59,35 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
 });
 
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const token = req.headers['authorization'];
+  if(!token) {
+    return res.status(403).json({message :'No token provided'});
+  }
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if(err) {
+        return res.status(401).json({message: 'Failed to authenticate token'});
+    }
+    const isbn = req.params.isbn;
+    const username = decoded.username;
+
+    if (!books[isbn]) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    // Add or update the review
+    if (books[isbn].reviews[username]) {
+        delete books[isbn].reviews[username];
+        return res.status(200).json({ message: 'Review deleted successfully' });
+      } else {
+        return res.status(404).json({ message: 'Review not found for user' });
+      }
+
+
+  } );
+
+});
+
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
