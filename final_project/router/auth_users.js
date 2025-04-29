@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [{uname:"jignesh",ups:"jin"}];
+let users = [{uname:"jignesh",ups:"jin"},{uname:"rim",ups:"rim"}];
+
 
 const secretKey = "Ramesh@superem11";
 
@@ -18,20 +19,33 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 }
 //only registered users can login
 regd_users.post("/login", (req,res) => {
-  
-  const {username,password} = req.body;
-  if(authenticatedUser(username,password)) {
-    const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+  try {
 
-    return res.json({ message: 'Login successful', token });
-  }
-  return res.status(401).json({ message: 'Invalid username or password' });
+
+      const {username,password} = req.body;
+      console.log(username,password);
+      
+      if (!username || !password) {
+          return res.status(400).json({ message: 'Username and password are required' });
+        }
+        
+        if(authenticatedUser(username,password)) {
+            const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+            
+            req.session.user = username;
+            return res.status(200).json({ message: 'Login successful', token });
+        }
+        return res.status(400).json({ message: 'Invalid username or password'});
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({message: "loggin in ", error: err});
+    }
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  const token = req.headers['authorization'];
+  const token =  req.headers['Authorization'];
   if(!token) {
     return res.status(403).json({message :'No token provided'});
   }
@@ -60,7 +74,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 });
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
-    const token = req.headers['authorization'];
+    const token = req.headers['Authorization'];
   if(!token) {
     return res.status(403).json({message :'No token provided'});
   }
