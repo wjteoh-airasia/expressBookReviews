@@ -6,7 +6,6 @@ const regd_users = express.Router();
 let users = [{uname:"jignesh",ups:"jin"},{uname:"rim",ups:"rim"}];
 
 
-const secretKey = "Ramesh@superem11";
 
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
@@ -30,10 +29,13 @@ regd_users.post("/login", (req,res) => {
         }
         
         if(authenticatedUser(username,password)) {
-            const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+            const actoken = jwt.sign({ username }, "access", { expiresIn: '1h' });
             
             req.session.user = username;
-            return res.status(200).json({ message: 'Login successful', token });
+            req.session.Authorization = {
+                actoken, username
+            }
+            return res.status(200).json({ message: 'Login successful', actoken });
         }
         return res.status(400).json({ message: 'Invalid username or password'});
     } catch (err) {
@@ -45,17 +47,11 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  const token =  req.headers['Authorization'];
-  if(!token) {
-    return res.status(403).json({message :'No token provided'});
-  }
-  jwt.verify(token, secretKey, (err, decoded) => {
-    if(err) {
-        return res.status(401).json({message: 'Failed to authenticate token'});
-    }
+
     const isbn = req.params.isbn;
-    const username = decoded.username;
+    const username = req.user;
     const review = req.body.review;
+    console.log(isbn,username,review)
 
     if (!books[isbn]) {
       return res.status(404).json({ message: 'Book not found' });
@@ -71,19 +67,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     return res.status(200).json({ message: 'Review added/updated successfully' });
   } );
 
-});
+
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
-    const token = req.headers['Authorization'];
-  if(!token) {
-    return res.status(403).json({message :'No token provided'});
-  }
-  jwt.verify(token, secretKey, (err, decoded) => {
-    if(err) {
-        return res.status(401).json({message: 'Failed to authenticate token'});
-    }
+
     const isbn = req.params.isbn;
-    const username = decoded.username;
+    const username = req.user;
+    // const username = decoded.username;
 
     if (!books[isbn]) {
       return res.status(404).json({ message: 'Book not found' });
@@ -98,9 +88,8 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
       }
 
 
-  } );
+  });
 
-});
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
