@@ -34,7 +34,10 @@ regd_users.post("/login", (req, res) => {
     username
   };
 
-  return res.status(200).json({ message: "User logged in successfully" });
+  return res.status(200).json({
+    message: "User logged in successfully",
+    token: accessToken
+  });
 });
 
 // Add or modify a book review
@@ -62,8 +65,35 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
   books[isbn].reviews[username] = review;
 
-  return res.status(200).json({ message: "Review added/updated successfully" });
+  return res.status(200).json({ 
+    message: "Review added/updated successfully",
+    reviews: books[isbn].reviews
+  });
 });
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  const username = req.session.authorization?.username;
+
+  if (!username) {
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+
+  if (!books[isbn]) {
+    return res.status(404).json({ message: "Book not found" });
+  }
+
+  if (!books[isbn].reviews || !books[isbn].reviews[username]) {
+    return res.status(404).json({ message: "Review not found for this user" });
+  }
+
+  // Delete the review
+  delete books[isbn].reviews[username];
+
+  return res.status(200).json({ message: "Review deleted successfully" });
+});
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
