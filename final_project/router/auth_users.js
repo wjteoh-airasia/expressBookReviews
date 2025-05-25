@@ -162,7 +162,6 @@ const handleReview = (req, res) => {
       allReviews: books[isbn].reviews
     });
   } catch (error) {
-    // Log and handle any errors
     console.error("Error processing review:", error);
     return res.status(500).json({ 
       success: false, 
@@ -172,16 +171,58 @@ const handleReview = (req, res) => {
   }
 };
 
-// Register both GET and PUT routes for the review endpoint
-// GET route for adding/modifying a review
 regd_users.get("/auth/review/:isbn", handleReview);
-
-// PUT route for adding/modifying a review (same handler function)
 regd_users.put("/auth/review/:isbn", handleReview);
 
-// Also register the routes without the 'auth' prefix for flexibility
-regd_users.get("/review/:isbn", handleReview);
-regd_users.put("/review/:isbn", handleReview);
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  try {
+    const isbn = req.params.isbn;
+    const username = req.session.user?.username;
+
+    // Check if user is authenticated
+    if (!username) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "User not authenticated" 
+      });
+    }
+
+    // Check if the book exists
+    if (!books[isbn]) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Book not found" 
+      });
+    }
+
+    const book = books[isbn];
+    
+    // Check if the user has a review for this book
+    if (!book.reviews[username]) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "No review found for this user" 
+      });
+    }
+
+    // Delete the user's review
+    delete book.reviews[username];
+    
+    return res.status(200).json({ 
+      success: true, 
+      message: "Review deleted successfully" 
+    });
+    
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Internal server error",
+      error: error.message 
+    });
+  }
+});
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
