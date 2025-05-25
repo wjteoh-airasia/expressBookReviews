@@ -1,13 +1,23 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
+const cors = require('cors');
 const { Session } = require('selenium-webdriver');
 const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
 
 const app = express();
 
+// Enable CORS
+app.use(cors({
+  origin: 'http://localhost:3000', // or '*' for any origin
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 app.use("/customer", session({
