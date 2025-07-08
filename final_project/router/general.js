@@ -3,23 +3,21 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
-const axios = require('axios'); // Add this line
+const axios = require('axios');
 
+// Register a new user
 public_users.post("/register", (req, res) => {
   const { username, password } = req.body;
 
-  // Check if username or password is missing
   if (!username || !password) {
     return res.status(400).json({ message: "Username and password are required." });
   }
 
-  // Check if username already exists
   const userExists = users.some(user => user.username === username);
   if (userExists) {
     return res.status(409).json({ message: "Username already exists." });
   }
 
-  // Register new user
   users.push({ username, password });
   return res.status(201).json({ message: "User registered successfully." });
 });
@@ -29,9 +27,8 @@ public_users.get('/',function (req, res) {
   return res.status(200).send(JSON.stringify(books, null, 4));
 });
 
-// Get the book list available in the shop using Promise callbacks (with Axios)
+// Get the book list available in the shop using Promise callbacks
 public_users.get('/books/promise', function (req, res) {
-  // Simulate an async operation using Promise
   new Promise((resolve, reject) => {
     resolve(books);
   })
@@ -43,10 +40,9 @@ public_users.get('/books/promise', function (req, res) {
   });
 });
 
-// Get the book list available in the shop using async-await (with Axios)
+// Get the book list available in the shop using async-await
 public_users.get('/books/async', async function (req, res) {
   try {
-    // Simulate an async operation (could be replaced with an actual Axios call)
     const getBooks = async () => books;
     const data = await getBooks();
     res.status(200).send(JSON.stringify(data, null, 4));
@@ -58,7 +54,6 @@ public_users.get('/books/async', async function (req, res) {
 // Example: Using Axios to call the same server (for demonstration)
 public_users.get('/books/axios', async function (req, res) {
   try {
-    // Replace localhost:5000 with your actual server address if needed
     const response = await axios.get('http://localhost:5000/');
     res.status(200).send(response.data);
   } catch (err) {
@@ -92,11 +87,10 @@ public_users.get('/isbn-promise/:isbn', function (req, res) {
   .catch(err => res.status(404).json({ message: err }));
 });
 
-// Get book details based on ISBN using async-await (with Axios)
+// Get book details based on ISBN using async-await
 public_users.get('/isbn-async/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
   try {
-    // Simulate async fetch (could be replaced with an actual Axios call)
     const getBook = async () => books[isbn];
     const book = await getBook();
     if (book) {
@@ -113,7 +107,6 @@ public_users.get('/isbn-async/:isbn', async function (req, res) {
 public_users.get('/isbn-axios/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
   try {
-    // Replace localhost:5000 with your actual server address if needed
     const response = await axios.get(`http://localhost:5000/isbn/${isbn}`);
     res.status(200).send(response.data);
   } catch (err) {
@@ -147,11 +140,10 @@ public_users.get('/author-promise/:author', function (req, res) {
   .catch(err => res.status(404).json({ message: err }));
 });
 
-// Get book details based on author using async-await (with Axios)
+// Get book details based on author using async-await
 public_users.get('/author-async/:author', async function (req, res) {
   const author = req.params.author;
   try {
-    // Simulate async fetch (could be replaced with an actual Axios call)
     const getBooksByAuthor = async () => Object.values(books).filter(book => book.author === author);
     const booksByAuthor = await getBooksByAuthor();
     if (booksByAuthor.length > 0) {
@@ -168,7 +160,6 @@ public_users.get('/author-async/:author', async function (req, res) {
 public_users.get('/author-axios/:author', async function (req, res) {
   const author = req.params.author;
   try {
-    // Replace localhost:5000 with your actual server address if needed
     const response = await axios.get(`http://localhost:5000/author/${author}`);
     res.status(200).send(response.data);
   } catch (err) {
@@ -202,11 +193,10 @@ public_users.get('/title-promise/:title', function (req, res) {
   .catch(err => res.status(404).json({ message: err }));
 });
 
-// Get all books based on title using async-await (with Axios)
+// Get all books based on title using async-await
 public_users.get('/title-async/:title', async function (req, res) {
   const title = req.params.title;
   try {
-    // Simulate async fetch (could be replaced with an actual Axios call)
     const getBooksByTitle = async () => Object.values(books).filter(book => book.title === title);
     const booksByTitle = await getBooksByTitle();
     if (booksByTitle.length > 0) {
@@ -223,7 +213,6 @@ public_users.get('/title-async/:title', async function (req, res) {
 public_users.get('/title-axios/:title', async function (req, res) {
   const title = req.params.title;
   try {
-    // Replace localhost:5000 with your actual server address if needed
     const response = await axios.get(`http://localhost:5000/title/${title}`);
     res.status(200).send(response.data);
   } catch (err) {
