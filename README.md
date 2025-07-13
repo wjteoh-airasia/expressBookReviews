@@ -1,1 +1,1 @@
-# coding-project-template
+Laboratorio práctico: Aplicación de revisión de libros.
