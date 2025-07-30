@@ -34,13 +34,55 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+  const author = req.params.author.toLowerCase().trim();
+  const matchingBooks = [];
+
+  // Get all keys from the books object
+  const keys = Object.keys(books);
+
+  // Loop through each book and compare the author
+  keys.forEach(key => {
+    const book = books[key];
+    if (book.author.toLowerCase().trim() === author) {
+      // Add to result array
+      matchingBooks.push({ isbn: key, ...book });
+    }
+  });
+
+  if (matchingBooks.length > 0) {
+    return res.status(200).json({
+      message: `Books by ${req.params.author}:`,
+      books: matchingBooks
+    });
+  } else {
+    return res.status(404).json({ message: `No books found by author ${req.params.author}` });
+  }});;
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const title = req.params.title.toLowerCase().trim();
+  const matchingBooks = [];
+
+  // Get all keys from the books object
+  const keys = Object.keys(books);
+
+  keys.forEach(key => {
+    const book = books[key];
+    if (book.title.toLowerCase().trim() === title) {
+      // Add to result array
+      matchingBooks.push({ isbn: key, ...book });
+    }
+  });
+
+  if (matchingBooks.length > 0) {
+    return res.status(200).json({
+      message: `Book "${req.params.title}"`,
+      books: matchingBooks
+    });
+  } else {
+    return res.status(404).json({ message: `No books found with name ${req.params.title}` });
+  }
 });
 
 //  Get book review
