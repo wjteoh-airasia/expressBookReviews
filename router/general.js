@@ -44,16 +44,23 @@ public_users.get('/', (req, res) => {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
-  const isbn = req.params.isbn;
-  const book = books[isbn]
-  if (book){
+  new Promise((resolve, reject)=>{})
+  const book = books[isbn];
+    if (book) {
+      resolve(book);
+    } else {
+      reject("No book found");
+    }
+  })
+  .then(book => {
     return res.status(200).json({
-        message: "Your book details:",
-        book: book
-      });
-  }else{
-  return res.status(404).json({message: "No book found"});
- }});
+      message: "Your book details:",
+      book: book
+    });
+  })
+  .catch(error => {
+    return res.status(404).json({ message: error });
+  });
   
 
 // Get book details based on author
