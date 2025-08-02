@@ -28,9 +28,16 @@ public_users.post("/register", (req,res) => {
   return res.status(200).json({ message: "User successfully registered. Now you can login." });
   })
 
+
 // Get the book list available in the shop
 public_users.get('/', (req, res) => {
-    return res.status(200).json(books);
+    new Promise((resolve, reject)=>{
+        resolve(books)
+    }).then(data => {
+    return res.status(200).json(data)})
+    .then (err =>{
+        return res.status(500).json(err)
+    });
   });
 
 
