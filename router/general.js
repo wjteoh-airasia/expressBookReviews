@@ -67,33 +67,39 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
   const author = req.params.author.toLowerCase().trim();
-  const matchingBooks = [];
 
-  // Get all keys from the books object
-  const keys = Object.keys(books);
+  new Promise((resolve, reject) => {
+    const matchingBooks = [];
 
-  // Loop through each book and compare the author
-  keys.forEach(key => {
-    const book = books[key];
-    if (book.author.toLowerCase().trim() === author) {
-      // Add to result array
-      matchingBooks.push({ isbn: key, ...book });
+    Object.keys(books).forEach(key => {
+      const book = books[key];
+      if (book.author.toLowerCase().trim() === author) {
+        matchingBooks.push({ isbn: key, ...book });
+      }
+    });
+
+    if (matchingBooks.length > 0) {
+      resolve(matchingBooks);
+    } else {
+      reject(`No books found by author ${req.params.author}`);
     }
-  });
-
-  if (matchingBooks.length > 0) {
+  })
+  .then(books => {
     return res.status(200).json({
       message: `Books by ${req.params.author}:`,
-      books: matchingBooks
+      books: books
     });
-  } else {
-    return res.status(404).json({ message: `No books found by author ${req.params.author}` });
-  }});;
+  })
+  .catch(error => {
+    return res.status(404).json({ message: error });
+  });
+});
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  const title = req.params.title.toLowerCase().trim();
+  new Promise((resolve, reject)=>{
+    const title = req.params.title.toLowerCase().trim();
   const matchingBooks = [];
 
   // Get all keys from the books object
@@ -108,13 +114,19 @@ public_users.get('/title/:title',function (req, res) {
   });
 
   if (matchingBooks.length > 0) {
-    return res.status(200).json({
-      message: `Book "${req.params.title}"`,
-      books: matchingBooks
-    });
+    resolve(matchingBooks)
   } else {
-    return res.status(404).json({ message: `No books found with name ${req.params.title}` });
+    reject(`No books found with name ${req.params.title}` );
   }
+  }).then(books => {
+    return res.status(200).json({
+      message: `Books by ${req.params.title}:`,
+      books: books
+    });
+  })
+  .catch(error => {
+    return res.status(404).json({ message: error });
+  });
 });
 
 
