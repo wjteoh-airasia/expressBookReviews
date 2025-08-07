@@ -4,10 +4,17 @@ const session = require("express-session");
 const customer_routes = require("./router/auth_users.js").authenticated;
 const genl_routes = require("./router/general.js").general;
 const cors = require("cors");
+const { users } = require("./router/auth_users.js");
 
 const app = express();
 
 app.use(express.json());
+
+app.get("/users", (req, res) => {
+    return res.status(200).json({
+        users,
+    });
+});
 
 app.use(
     "/customer",
@@ -25,7 +32,7 @@ app.use("/customer/auth/*", function auth(req, res, next) {
 
     const token = req.session.authorization.accessToken;
 
-    jwt.verify(token, "fingerprint_customer", (err, user) => {
+    jwt.verify(token, "fingerprint", (err, user) => {
         if (err) {
             return res.status(403).json({ message: "Invalid token" });
         }

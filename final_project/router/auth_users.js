@@ -20,23 +20,22 @@ const authenticatedUser = (username, password) => {
 //only registered users can login
 regd_users.post("/login", (req, res) => {
     const { username, password } = req.body;
+
     if (!username || !password) {
-        return res.status(400).json({
-            message: "Benutzername und Passwort sind erforderlich ",
+        return res.status(409).json({
+            message: "Bentername und password beides eingeben!!!",
         });
     }
 
-    const isExist = users.find(
-        (user) => user.username === username && user.password === password
-    );
-
-    if (!isExist) {
-        return res.status(404).send("Ungültige Daten");
+    if (!authenticatedUser(username, password)) {
+        return res.status(400).json({
+            message: "Benutzername und Password passen nicht  zusammen",
+            username,
+            password,
+        });
     }
 
-    const token = jwt.sign({ username: username }, "fingerprint_customer", {
-        expiresIn: "1h",
-    });
+    const token = jwt.sign({ username }, "fingerprint", { expiresIn: "1h" });
 
     req.session.authorization = {
         accessToken: token,
@@ -44,7 +43,7 @@ regd_users.post("/login", (req, res) => {
     };
 
     return res.status(200).json({
-        message: "Erfolgreich angemeldet",
+        message: "Anmeldung Erfolgreich",
         token: token,
     });
 });
@@ -55,29 +54,20 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     const review = req.body.review;
 
     if (!review) {
-        return res.status(400).json({
-            message: "Rezension ist erforderlich",
-        });
+        return res.status(400).json({ message: "Bewertung ist erforderlich" });
     }
 
-    const username = req.session.authorization.username;
-    if (!username) {
-        return res.status(401).json({
-            message: "Nicht autorisiert",
-        });
-    }
-
+    const username = req.session.authorization?.username;
     const book = books[isbn];
+
     if (!book) {
-        return res.status(404).json({
-            message: "Buch nicht gefunden",
-        });
+        return res.status(404).json({ message: "Buch nicht gefunden" });
     }
 
     book.reviews[username] = review;
 
     return res.status(200).json({
-        message: "Rezenzion gespeichert",
+        message: "Bewertung gespeichert",
         reviews: book.reviews,
     });
 });
