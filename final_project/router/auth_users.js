@@ -5,8 +5,16 @@ const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
+const isValid = (username)=>{ 
+    let userParse = users.parse((user) => {
+        return user.username === username
+    })//returns boolean
 //write code to check is the username is valid
+    if (userParse.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
@@ -46,8 +54,28 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let activeUser = req.session.authorization.username
+  let isbnQuery = req.params.isbn;
+  let inputReview = req.body.review;
+  let chosenBook = books[isbnQuery]
+
+  chosenBook.reviews[`${activeUser}`] = inputReview
+  console.log(chosenBook)
+
+  return res.status(300).json({message: "Review sent successfully"});
 });
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    let isbnParam = req.params.isbn;
+    let username = req.session.authorization.username;
+    let chosenBook = books[isbnParam];
+    console.log(chosenBook)
+    if(chosenBook.reviews[`${username}`]) {
+        delete chosenBook.reviews[`${username}`];
+    };
+    console.log(chosenBook);
+    res.status(300).json({message: "Review deleted successfully!"})
+})
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
