@@ -81,8 +81,8 @@ public_users.get('/author/:author',function (req, res) {
     // Asynchronous, promise-based code for getting book info. based on author name
     let authorFilterPromise = new Promise((resolve, reject) => {
         Object.keys(books).forEach(book => {
-            if(books[book].author === authorQuery.replaceAll("_", " ")) {
-                authorObj = books[book]
+            if(books[book].author === authorQuery.replaceAll("_", " ") || books[book].author.indexOf(authorQuery) > -1) {
+                authorObj[`${book}`] = books[book]
             };
         });
         setTimeout(() => {
@@ -91,11 +91,12 @@ public_users.get('/author/:author',function (req, res) {
     })
 
     authorFilterPromise.then((response) => {
-        if(!response.author) {
+        /*if(!response.author) {
             return res.status(401).json({message: "Author not found!"})
         } else {
             return res.status(300).send(JSON.stringify(response));
-        }
+        }*/
+        return res.status(300).send(JSON.stringify(response, null, 4))
     })
 });
 
