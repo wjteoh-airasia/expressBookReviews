@@ -37,58 +37,103 @@ public_users.post("/register", (req,res) => {
   return res.status(404).json({message: "Unable to register user."});
 });
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  // Send JSON response with formatted books data
-    res.send(JSON.stringify(books,null,4));
+// Helper function to simulate an asynchronous API call
+const getBooksAsync = () => {
+    return new Promise((resolve, reject) => {
+        // We wrap the synchronous data access in a Promise
+        // to simulate a real-world async operation like a database query.
+        if (books) {
+            resolve(books);
+        } else {
+            reject("Book data could not be found.");
+        }
+    });
+};
+
+// Get the book list available in the shop (using async-await)
+public_users.get('/', async (req, res) => {
+    try {
+        const bookList = await getBooksAsync(); // Wait for the promise to resolve
+        res.status(200).send(JSON.stringify(bookList, null, 4));
+    } catch (error) {
+        console.error("Error fetching book list:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  // Retrieve the isbn parameter from the request URL and send the corresponding book's details
+// Simulates fetching a single book by ISBN
+const getBookByIsbnAsync = (isbn) => {
+    return new Promise((resolve, reject) => {
+        const book = books[isbn];
+        if (book) {
+            resolve(book); // Found the book
+        } else {
+            reject("Book not found"); // Did not find the book
+        }
+    });
+};
+
+// Get book details based on ISBN (Async)
+public_users.get('/isbn/:isbn', async (req, res) => {
     const isbn = req.params.isbn;
-    if (books[isbn]) {
-        res.status(200).json(books[isbn]);
-    } else {
-        res.status(404).json({ message: "Book not found" });
-    }
- });
-  
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-    const author = req.params.author;
-    const allBookKeys = Object.keys(books);
-    const matchingBooks = [];
-
-    allBookKeys.forEach(key => {
-        if (books[key].author === author) {
-            matchingBooks.push(books[key]);
-        }
-    });
-
-    if (matchingBooks.length > 0) {
-        res.status(200).json(matchingBooks);
-    } else {
-        res.status(404).json({ message: "No books found by that author" });
+    try {
+        const book = await getBookByIsbnAsync(isbn); // Wait for the promise to resolve
+        res.status(200).json(book);
+    } catch (error) {
+        // This will catch the 'reject' from the promise
+        res.status(404).json({ message: error });
     }
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-    const title = req.params.title;
-    const allBookKeys = Object.keys(books);
-    const matchingBooks = [];
-
-    allBookKeys.forEach(key => {
-        if (books[key].title === title) {
-            matchingBooks.push(books[key]);
+const getBooksByAuthorAsync = (author) => new Promise((resolve, reject) => {
+    const authorBooks = [];
+    for (const key in books) {
+        if (books[key].author.toLowerCase() === author.toLowerCase()) {
+            authorBooks.push(books[key]);
         }
-    });
-
-    if (matchingBooks.length > 0) {
-        res.status(200).json(matchingBooks);
+    }
+    if (authorBooks.length > 0) {
+        resolve(authorBooks); // Found books by the author
     } else {
-        res.status(404).json({ message: "No books found with that title" });
+        reject("No books found by that author"); // Did not find any
+    }
+});
+
+// Get book details based on author (Async)
+public_users.get('/author/:author', async (req, res) => {
+    const author = req.params.author;
+    try {
+        const matchingBooks = await getBooksByAuthorAsync(author);
+        res.status(200).json(matchingBooks);
+    } catch (error) {
+        // This catches the 'reject' from the promise
+        res.status(404).json({ message: error });
+    }
+});
+
+const getBooksByTitleAsync = (title) => new Promise((resolve, reject) => {
+    const titleBooks = [];
+    for (const key in books) {
+        if (books[key].title.toLowerCase() === title.toLowerCase()) {
+            titleBooks.push(books[key]);
+        }
+    }
+    if (titleBooks.length > 0) {
+        resolve(titleBooks); // Found books with the matching title
+    } else {
+        reject("No books found with that title"); // Did not find any
+    }
+});
+
+// Get all books based on title (Async)
+public_users.get('/title/:title', async (req, res) => {
+    const title = req.params.title;
+    try {
+        const matchingBooks = await getBooksByTitleAsync(title);
+        res.status(200).json(matchingBooks);
+    } catch (error) {
+        // This catches the 'reject' from the promise
+        res.status(404).json({ message: error });
     }
 });
 
